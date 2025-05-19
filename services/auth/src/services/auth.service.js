@@ -72,7 +72,9 @@ class AuthService {
         }
 
         // generate tokens
-        const { accessToken, refreshToken } = TokenService.generateTokens(user.id);
+        const { accessToken, refreshToken } = TokenService.generateTokens(user.id, 
+            process.env.ACCESS_TOKEN_LASTING, 
+            process.env.REFRESH_TOKEN_LASTING);
 
         // store refresh token per device or create a new one if it doesn't exist
         await TokenService.storeRefreshToken(user.id, refreshToken, deviceId);

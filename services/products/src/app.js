@@ -5,11 +5,15 @@ const app = express();
 
 const bodyParser = require('body-parser');
 
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+// database connections
+const connectMongo = require('../src/databases/mongo');
+
+connectMongo();
+
 // routes
-app.use('/v1/api/auth', require('./routes/auth.routes'));
 
 // error catching handler
 app.use((req, res, next) => {
