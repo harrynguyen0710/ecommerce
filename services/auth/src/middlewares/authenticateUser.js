@@ -13,7 +13,6 @@ const authenticateUser = (req, res, next) => {
     console.log(token);
     // check if token exists    
     if (!token) {
-        console.log('no token');
         return next(new AuthFailureError('Authentication failed'));
     }
 

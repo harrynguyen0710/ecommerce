@@ -20,7 +20,7 @@ describe("TokenService", () => {
       .mockReturnValueOnce("accessToken")
       .mockReturnValueOnce("refreshToken");
 
-    const result = TokenService.generateTokens("user123");
+    const result = TokenService.generateTokens("user123", process.env.ACCESS_TOKEN_LASTING, process.env.REFRESH_TOKEN_LASTING);
 
     expect(result).toEqual({
       accessToken: "accessToken",
