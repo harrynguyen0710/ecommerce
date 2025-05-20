@@ -2,14 +2,19 @@ require('dotenv').config({ path: '../local.env' });
 
 const express = require('express');
 const app = express();
-
 const bodyParser = require('body-parser');
 
+const { startConsumer } = require('./kafka/consumer');
+const { connectDlqProducer } = require('./kafka/dlqProducer');
 
 const { connectPrisma } = require('./config/prisma');
 
 connectPrisma(); 
 
+async function startApp() {
+  await connectDlqProducer();
+  await startConsumer();
+}
 
 app.use(express.json());
 
@@ -30,5 +35,9 @@ app.use((error, req, res, next) => {
         message: error.message || 'Internal Server Error',
     });
 });
+
+
+startApp();
+
 
 module.exports = app;
