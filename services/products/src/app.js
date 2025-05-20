@@ -3,6 +3,8 @@ require('dotenv').config({ path: '../local.env' });
 const express = require('express');
 const app = express();
 
+const requestTimer = require('./middlewares/requestTimer');
+
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,6 +16,9 @@ const connectMongo = require('../src/databases/mongo');
 connectMongo();
 
 // routes
+
+
+app.use(requestTimer); 
 
 // error catching handler
 app.use((req, res, next) => {
