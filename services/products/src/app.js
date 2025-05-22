@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../local.env' });
+// require('dotenv').config();
 
 const express = require('express');
 const app = express();
@@ -10,15 +10,20 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+// request timer for measure metrics
+app.use(requestTimer); 
+
+
 // database connections
 const connectMongo = require('../src/databases/mongo');
 
 connectMongo();
 
+
 // routes
+app.use('/v1/api/products', require('./routes/products.route'));
 
 
-app.use(requestTimer); 
 
 // error catching handler
 app.use((req, res, next) => {
@@ -30,6 +35,7 @@ app.use((req, res, next) => {
 // global error handling middleware
 app.use((error, req, res, next) => {
     const statusCode = error.status || 500; 
+    console.log('500 error::', error);
     return res.status(statusCode).json({
         status: statusCode,
         message: error.message || 'Internal Server Error',

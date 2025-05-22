@@ -3,7 +3,6 @@
 const app = require('./src/app');
 const dotenv = require('dotenv');   
 
-dotenv.config({ path: "./local.env" });
 
 const PORT = process.env.PORT || 5001;
 

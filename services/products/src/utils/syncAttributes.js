@@ -7,10 +7,8 @@ const syncAttributes = (variants) => {
         sizeSet.add(v.size);
     }
 
-    return {
-        color: Array.from(colorSet),
-        size: Array.from(sizeSet),
-    };
+    return { colorSet, sizeSet };
+
 
 }
 

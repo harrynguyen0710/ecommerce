@@ -14,4 +14,4 @@ const VariantSchema = new mongoose.Schema({
     image: { type: String }
 }, { _id: false }) // variants don't need individual _id
 
-module.exports = mongoose.model('ProductVariants', VariantSchema);
+module.exports = VariantSchema;

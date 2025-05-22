@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../src/generated/prisma');
+const { PrismaClient } = require('../generated/prisma');
 
 const loggingMiddleware = require('../middlewares/logging');
 const slowQueryLogger = require('../middlewares/slowQueryLogger');
