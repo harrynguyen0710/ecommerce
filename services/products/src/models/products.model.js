@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require('uuid');
+
 const mongoose = require('mongoose');
 
 const ProductVariants = require('./variants.model');
@@ -8,6 +10,8 @@ const ProductSchema = new mongoose.Schema({
         required: true, 
         unique: true, 
         index: true,
+        default: uuidv4
+
     },
     title: {
         type: String,
@@ -37,7 +41,6 @@ const ProductSchema = new mongoose.Schema({
     },
 }, {
     timestamps: true, 
-    _id: false,
 });
 
 

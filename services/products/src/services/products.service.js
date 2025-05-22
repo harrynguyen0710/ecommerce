@@ -22,7 +22,11 @@ class ProductService {
     try {
       const productId = uuidv4();
 
-      const { colorSet, sizeSet } = syncAttributes(variants);
+      const result = syncAttributes(variants);
+
+      if (!result) throw new Error('syncAttributes returned undefined');
+
+      const { colorSet, sizeSet } = result;
 
       const attributes = {
         color: Array.from(colorSet),
