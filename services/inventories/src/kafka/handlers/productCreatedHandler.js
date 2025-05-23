@@ -23,19 +23,16 @@ async function handleProductCreated({ productId, variants }) {
     });
   }
 
-  for (const entry of inventoryEntries) {
-    try {
-      await prisma.inventory.create({ data: entry });
-      console.log(
-        `✅ Inventory created for product ${productId}, SKU: ${entry.sku}`
-      );
-    } catch (error) {
-      if (error.code === "P2002") {
-        console.warn(`⚠️ SKU '${entry.sku}' already exists. Skipping.`);
-      } else {
-        throw error;
-      }
-    }
+  try {
+    const result = await prisma.inventory.createMany({
+      data: inventoryEntries,
+      skipDuplicates: true,
+    });
+
+    console.log(`✅ Bulk inventory insert: ${result.count} new items added.`);
+  } catch (error) {
+    console.error("❌ Error inserting inventory in bulk:", error);
+    throw error;
   }
 }
 

@@ -7,10 +7,10 @@ const productController = require('../controllers/products.controller');
 router.post('/', productController.createProduct);
 
 // GET v1/api/products
-// router.get('/', productController.getAllProducts);
+router.get('/', productController.getProducts);
 
 // GET v1/api/products/:id
-// router.get('/:id', productController.getProductById);
+router.get('/:id', productController.getProductById);
 
 // PUT v1/api/products/:id
 // router.put('/:id', productController.updateProduct);
