@@ -1,6 +1,6 @@
 const { kafkaProducer } = require('./producer');
 
-async function sentEventToKafka(event) {
+async function sendEventToKafka(event) {
     try {
         await kafkaProducer.send({
             topic: event.eventType,
@@ -45,6 +45,6 @@ async function sendToDLQ(event, error) {
 }
 
 module.exports = {
+    sendEventToKafka,
     sendToDLQ,
-    sentEventToKafka,
 }
