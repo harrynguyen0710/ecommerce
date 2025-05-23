@@ -8,6 +8,8 @@ async function processOutboxEvents() {
         retries: { $lt: 5 },
     }).limit(10);
 
+    console.log(`Processing ${pendingEvents.length} outbox events...`);
+    
     for (const event of pendingEvents) {
         await handleOutboxEvent(event);
     }

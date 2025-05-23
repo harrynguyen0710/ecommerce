@@ -75,6 +75,36 @@ services:
     volumes:
       - ./services/products:/app
       - /app/node_modules
+      - mongo_data:/data/db
+      - ./services/products/infra/mongo-init:/docker-entrypoint-initdb.d
+
+  product-outbox-worker:
+    build:
+      context: ./services/products
+    container_name: product-outbox-worker
+    command: ["node", "src/jobs/runOutboxWorker.js"]
+    depends_on: 
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/product_service?replicaSet=rs0
+      - KAFKA_BROKER=kafka:9092
+
+  inventory-consumer:
+    build:
+      context: ./services/inventories
+    container_name: inventory-consumer
+    command: node src/app.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy 
+    env_file:
+      - ./services/inventories/.env 
 
   inventory-service:
     build: ./services/inventories
@@ -88,16 +118,7 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - ./services/inventories/.env
-    # environment:
-    #   KAFKA_BROKERS: kafka:9092
-    #   POSTGRES_HOST: postgres
-    #   POSTGRES_PORT: 5432
-    #   POSTGRES_USER: postgres
-    #   POSTGRES_PASSWORD: postgres
-    #   POSTGRES_DB: inventory_service 
-    #   PORT: 5002
-      
+      - ./services/inventories/.env 
     volumes:
       - ./services/inventories:/app
       - /app/node_modules

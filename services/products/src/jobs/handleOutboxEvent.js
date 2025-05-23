@@ -51,3 +51,8 @@ async function handleOutboxEvent(event) {
 
   }
 }
+
+
+module.exports = {
+  handleOutboxEvent,
+}
