@@ -9,6 +9,10 @@ const { v4: uuidv4 } = require("uuid");
 // utils
 const { syncAttributes } = require("../utils/syncAttributes");
 
+// clients
+const { getInventoryBySkus } = require("../../clients/inventory.client")
+
+
 class ProductService {
   constructor() {
     this.Product = Product;
@@ -80,9 +84,31 @@ class ProductService {
   }
 
   async getProductById(id, fields = "") {
-    return await Product.findOne({ productId: id }).select(
+    
+    const product = await Product.findOne({ productId: id }).select(
       `${fields} -createdAt -updatedAt`
-    );
+    ).lean();
+  
+    if (!product) return null;
+
+    const skus = product.variants.map((v) => v.sku);
+    console.log("HERE", skus);  
+    const inventoryMap = await getInventoryBySkus(skus);
+
+    const enrichedVariants = product.variants.map((variant) => ({
+      ...variant,
+      inventory: inventoryMap[variant.sku] || {
+        quantity: 0,
+        reserved: 0,
+        status: "OUT_OF_STOCK",
+      },
+    }));
+
+    return {
+      ...product,
+      variants: enrichedVariants,
+    };
+    
   }
   
 }
