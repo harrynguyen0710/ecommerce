@@ -26,6 +26,9 @@ model Inventory  {
   status    InventoryStatus @default(AVAILABLE)
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
+
+  @@index([sku])
+
 }
 
 enum InventoryStatus {

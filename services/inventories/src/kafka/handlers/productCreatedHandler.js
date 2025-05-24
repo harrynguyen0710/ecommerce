@@ -6,7 +6,7 @@ async function handleProductCreated({ productId, variants }) {
   }
 
   const inventoryEntries = [];
-
+  
   for (const v of variants) {
     if (!v.sku || typeof v.sku !== "string") {
       throw new Error(

@@ -17,8 +17,10 @@ async function startApp() {
 }
 
 app.use(express.json());
+// app.use(bodyParser.json());
 
 // routes
+app.use('/v1/api', require('./routes/inventory.route'));
 
 // error catching handler
 app.use((req, res, next) => {
