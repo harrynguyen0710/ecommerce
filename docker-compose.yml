@@ -166,3 +166,8 @@ volumes:
 
 networks:
   ecommerce:
+    name: ecommerce 
+    driver: bridge
+
+    
+

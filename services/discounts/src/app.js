@@ -9,7 +9,7 @@ const { connectPrisma } = require('./configs/prisma');
 connectPrisma(); 
 
 
-app.use('/v1/api', require('./route/discount.route'));
+app.use('/v1/api/discounts', require('./route/discount.route'));
 
 // middleware 404
 app.use((req, res, next) => {
