@@ -46,18 +46,16 @@ services:
     container_name: postgres
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: inventory_service  
+    env_file:
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./docker/init-dbs.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
-
 
   product-service:
     build: ./services/products
@@ -123,7 +121,21 @@ services:
       - ./services/inventories:/app
       - /app/node_modules
 
-      
+  discount-service:
+    build: ./services/discounts
+    container_name: discount-service
+    env_file:
+      - ./services/discounts/.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./services/discounts:/app
+      - /app/node_modules
 
 
 volumes:
