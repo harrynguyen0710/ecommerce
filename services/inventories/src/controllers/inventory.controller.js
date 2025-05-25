@@ -72,6 +72,25 @@ class InventoryController {
       });
     }
   }
+
+  async getSkus (req, res) {
+    try {
+      const rawIds = req.query.productIds;
+      console.log('Raw IDs:', rawIds);
+      if (!rawIds) {
+        return res.status(400).json({ error: "Missing SKUs query parameter" });
+      }
+
+      const skus = await inventoryService.getSkusByProductIds(rawIds);
+
+      return res.json({ skus }); 
+
+    } catch (error) {
+      console.error("Error fetching SKUs:", error);
+      res.status(500).json({ error: "Failed to fetch SKUs", details: error.message });
+    }
+  }
+
 }
 
 module.exports = new InventoryController();

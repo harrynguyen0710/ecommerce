@@ -105,6 +105,25 @@ class InventoryService {
 
     return results;
   }
+
+  async getSkusByProductIds (rawIds) {
+    const productIds = rawIds.split(',');
+    console.log('Product IDs:', productIds);
+    const skus = await prisma.inventory.findMany({
+      where: {
+        productId: {
+          in: productIds,
+        }
+      },
+      select: {
+        sku: true,
+        productId: true,
+      }
+    });
+
+    return skus;
+
+  }
 }
 
 module.exports = new InventoryService();
