@@ -1,3 +1,15 @@
 node_modules/
 .env
 *.log
+
+
+src/generated/
+prisma/.DS_Store
+
+
+
+
+# Misc
+dist/
+coverage/
+
