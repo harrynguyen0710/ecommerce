@@ -7,6 +7,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - ecommerce
+
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -26,6 +29,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    networks:
+      - ecommerce
 
   mongo:
     image: mongo:6
@@ -40,6 +45,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ecommerce
 
   postgres:
     image: postgres:15
@@ -56,6 +63,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - ecommerce
 
   product-service:
     build: ./services/products
@@ -75,6 +84,8 @@ services:
       - /app/node_modules
       - mongo_data:/data/db
       - ./services/products/infra/mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce
 
   product-outbox-worker:
     build:
@@ -91,6 +102,9 @@ services:
       - MONGO_URI=mongodb://mongo:27017/product_service?replicaSet=rs0
       - KAFKA_BROKER=kafka:9092
 
+    networks:
+      - ecommerce
+
   inventory-consumer:
     build:
       context: ./services/inventories
@@ -103,6 +117,10 @@ services:
         condition: service_healthy 
     env_file:
       - ./services/inventories/.env 
+    
+    networks:
+      - ecommerce
+
 
   inventory-service:
     build: ./services/inventories
@@ -120,6 +138,8 @@ services:
     volumes:
       - ./services/inventories:/app
       - /app/node_modules
+    networks:
+      - ecommerce
 
   discount-service:
     build: ./services/discounts
@@ -136,8 +156,13 @@ services:
     volumes:
       - ./services/discounts:/app
       - /app/node_modules
+    networks:
+      - ecommerce
 
 
 volumes:
   mongo_data:
   pgdata:
+
+networks:
+  ecommerce:

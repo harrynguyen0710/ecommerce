@@ -1,13 +1,16 @@
 const { prisma } = require("../configs/prisma");
 const { v4: uuidv4 } = require("uuid");
+const { getSkusByProductID } = require("../../clients/inventory.client");
 
 const createDiscount = async (payload, start, end) => {
+
   const {
     code,
     type,
     value,
     minOrderValue,
-    applicableSkus,
+    applicableSkus = [],
+    applicableProductIds = [],
     maxUsage,
     usageCount,
     perUserLimit,
@@ -21,6 +24,15 @@ const createDiscount = async (payload, start, end) => {
 
   if (isDuplicate) {
     throw new Error("Discount code already exists");
+  }
+
+  // sku
+  let finalSkus = [...applicableSkus];
+
+  if (applicableProductIds.length > 0) {
+    const skuResponse = await getSkusByProductID(applicableProductIds);
+    const productSkus = skuResponse.skus.map((entry) => entry.sku);
+    finalSkus = [...new Set([...finalSkus, ...productSkus])]; 
   }
 
   const discount = await prisma.discount.create({

@@ -14,6 +14,7 @@ const discountSchema = Joi.object({
   usageCount: Joi.number().integer().min(0).optional(),
   perUserLimit: Joi.number().integer().min(0).optional(),
   applicableSkus: Joi.array().items(Joi.string()).optional(),
+  applicableProductIds: Joi.array().items(Joi.string()).optional(),
 });
 
 const validateDiscount = (req, res, next) => {
