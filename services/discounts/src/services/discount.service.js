@@ -1,6 +1,6 @@
 const { prisma } = require("../configs/prisma");
 
-const { createDiscount } = require("../repositories/discount.repository");
+const { createDiscount, findByCode, findAll, updateInfoByCode, updateApplicableSkus, } = require("../repositories/discount.repository");
 
 const validateDiscountInput = require("../utils/validateDiscountInput");
 
@@ -23,6 +23,35 @@ class DiscountService {
       }
       throw new Error("Failed to create discount: " + error.message);
     }
+  }
+
+  async getAllDiscounts() {
+    console.log("Fetching all discounts 2");
+    return findAll();
+  }
+
+  async getDiscountByCode(code) {
+    return await findByCode(code);
+  };
+
+  async updateDiscountByCode(code, payload) {
+    const existing = findByCode(code);
+    
+    if (!existing) {
+      throw new Error("Discount not found 6");
+    }
+
+    return updateInfoByCode(code, payload);
+  }
+
+  async updateApplicableSkus(code, skus) {
+    const existing = await findByCode(code);
+    
+    if (!existing) {
+      throw new Error("Discount not found 7");
+    }
+
+    return updateApplicableSkus(code, skus);
   }
 }
 
