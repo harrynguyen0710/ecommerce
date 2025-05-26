@@ -131,7 +131,6 @@ services:
         condition: service_healthy
     env_file:
       - ./services/products/.env
-      
 
   inventory-consumer:
     build:
@@ -187,8 +186,6 @@ services:
     networks:
       - ecommerce
   
-
-
   file-upload-service:
     build: ./services/file-upload
     container_name: file-upload-service
