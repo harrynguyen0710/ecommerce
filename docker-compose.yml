@@ -79,6 +79,7 @@ services:
     # networks:
     #   - ecommerce
 
+
   product-service:
     build: ./services/products
     container_name: product-service
@@ -117,6 +118,19 @@ services:
 
     networks:
       - ecommerce
+
+  product-bulk-consumer:
+    build:
+      context: ./services/products
+    container_name: product-bulk-consumer
+    command: node src/consumers/productBulkConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    env_file:
+      - ./services/products/.env
 
   inventory-consumer:
     build:
@@ -184,6 +198,8 @@ services:
       - redis
     env_file:
       - ./services/file-upload/.env 
+    networks:
+      - ecommerce
 
   file-worker:
     build:
@@ -196,7 +212,10 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/file-upload/.env     
+      - ./services/file-upload/.env
+    networks:
+      - ecommerce
+
 
 volumes:
   mongo_data:
@@ -207,4 +226,4 @@ networks:
     name: ecommerce 
     driver: bridge
 
-    
+
