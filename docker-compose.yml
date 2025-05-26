@@ -198,6 +198,8 @@ services:
       - redis
     env_file:
       - ./services/file-upload/.env 
+    networks:
+      - ecommerce
 
   file-worker:
     build:
@@ -210,7 +212,10 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/file-upload/.env     
+      - ./services/file-upload/.env
+    networks:
+      - ecommerce
+
 
 
 volumes:
