@@ -7,6 +7,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - ecommerce
+
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -26,6 +29,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    networks:
+      - ecommerce
 
   mongo:
     image: mongo:6
@@ -40,23 +45,39 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ecommerce
 
   postgres:
     image: postgres:15
     container_name: postgres
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: inventory_service  
+    env_file:
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./docker/init-dbs.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - ecommerce
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # networks:
+    #   - ecommerce
 
 
   product-service:
@@ -77,6 +98,8 @@ services:
       - /app/node_modules
       - mongo_data:/data/db
       - ./services/products/infra/mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce
 
   product-outbox-worker:
     build:
@@ -93,6 +116,23 @@ services:
       - MONGO_URI=mongodb://mongo:27017/product_service?replicaSet=rs0
       - KAFKA_BROKER=kafka:9092
 
+    networks:
+      - ecommerce
+
+  product-bulk-consumer:
+    build:
+      context: ./services/products
+    container_name: product-bulk-consumer
+    command: node src/consumers/productBulkConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    env_file:
+      - ./services/products/.env
+      
+
   inventory-consumer:
     build:
       context: ./services/inventories
@@ -105,6 +145,10 @@ services:
         condition: service_healthy 
     env_file:
       - ./services/inventories/.env 
+    
+    networks:
+      - ecommerce
+
 
   inventory-service:
     build: ./services/inventories
@@ -122,10 +166,63 @@ services:
     volumes:
       - ./services/inventories:/app
       - /app/node_modules
+    networks:
+      - ecommerce
 
-      
+  discount-service:
+    build: ./services/discounts
+    container_name: discount-service
+    env_file:
+      - ./services/discounts/.env
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./services/discounts:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+  
+
+
+  file-upload-service:
+    build: ./services/file-upload
+    container_name: file-upload-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./services/file-upload:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    env_file:
+      - ./services/file-upload/.env 
+
+  file-worker:
+    build:
+      context: ./services/file-upload
+    container_name: file-worker
+    command: node src/jobs/insertProductProcessor.js
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/file-upload/.env     
 
 
 volumes:
   mongo_data:
   pgdata:
+
+networks:
+  ecommerce:
+    name: ecommerce 
+    driver: bridge
+
+
