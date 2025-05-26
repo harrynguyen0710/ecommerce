@@ -66,6 +66,20 @@ services:
     networks:
       - ecommerce
 
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # networks:
+    #   - ecommerce
+
+
   product-service:
     build: ./services/products
     container_name: product-service
@@ -158,6 +172,32 @@ services:
       - /app/node_modules
     networks:
       - ecommerce
+  
+  file-upload-service:
+    build: ./services/file-upload
+    container_name: file-upload-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./services/file-upload:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+    env_file:
+      - ./services/file-upload/.env 
+
+  file-worker:
+    build:
+      context: ./services/file-upload
+    container_name: file-worker
+    command: node src/jobs/insertProductProcessor.js
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/file-upload/.env     
 
 
 volumes:
@@ -169,5 +209,4 @@ networks:
     name: ecommerce 
     driver: bridge
 
-    
 
