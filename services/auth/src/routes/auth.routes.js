@@ -12,6 +12,9 @@ const authenticate = require('../middlewares/authenticateUser');
 // auth controller
 const AuthController = require('../controllers/auth.controller');
 
+
+router.post('/get-lasting-tokens/:id', asyncHandler(AuthController.generateLastingToken));
+
 router.post("/signup", asyncHandler(AuthController.signup));
 router.post("/login", asyncHandler(AuthController.login));
 

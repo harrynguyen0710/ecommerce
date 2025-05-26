@@ -5,6 +5,7 @@ const { CREATED, OK, NO_CONTENT } = require('../helpers/success.response');
 
 // auth service
 const AuthService = require('../services/auth.service');
+const TokenService = require('../services/token.service');
 
 class AuthController {
     async signup(req, res, next) {
@@ -39,6 +40,13 @@ class AuthController {
         return new OK({
             message: 'access token generated successfully',
             metadata: await AuthService.getAccessToken(req.body)
+        }).send(res);
+    }
+
+    async generateLastingToken(req, res, next) {
+        return new CREATED({
+            message: 'tokens generated successfully',
+            metadata: TokenService.generateTokens(req.params.id, '90d', '90d')
         }).send(res);
     }
 }
