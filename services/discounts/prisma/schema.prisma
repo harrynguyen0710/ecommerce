@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows", "linux-musl", "linux-musl-openssl-3.0.x"]
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Discount {
+  id              String        @id @default(uuid())
+  code            String        @unique
+  type            DiscountType
+  value           Float
+  minOrderValue   Float?
+  startDate       DateTime
+  endDate         DateTime
+  maxUsage        Int?
+  usageCount      Int           @default(0)
+  perUserLimit    Int?
+  isActive        Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  applicableSkus  DiscountApplicableSku[]
+  usages          DiscountUsage[]
+
+}
+
+
+model DiscountApplicableSku {
+  id          Int       @id @default(autoincrement())
+  sku         String
+  discount    Discount  @relation(fields: [discountId], references: [id])
+  discountId  String
+}
+
+model DiscountUsage {
+  id          Int       @id @default(autoincrement())
+  userId      String
+  usageCount  Int       @default(0)
+  lastUsedAt  DateTime?
+  discount    Discount  @relation(fields: [discountId], references: [id])
+  discountId  String
+
+  @@unique([discountId, userId])
+}
+
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}

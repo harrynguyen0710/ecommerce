@@ -79,6 +79,7 @@ services:
     # networks:
     #   - ecommerce
 
+
   product-service:
     build: ./services/products
     container_name: product-service
@@ -198,6 +199,7 @@ services:
     env_file:
       - ./services/file-upload/.env     
 
+
 volumes:
   mongo_data:
   pgdata:
@@ -207,4 +209,4 @@ networks:
     name: ecommerce 
     driver: bridge
 
-    
+

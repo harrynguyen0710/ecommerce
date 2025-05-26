@@ -9,14 +9,15 @@ const jwt = require('jsonwebtoken');
 
 class TokenService {
 
-    static generateTokens = (userId) => {
-        const accessToken = jwt.sign({ userId }, process.env.PRIVATE_KEY_SECRET, { expiresIn: '1d' });
-        const refreshToken = jwt.sign({ userId }, process.env.PRIVATE_KEY_SECRET, { expiresIn: '7d' }); 
+    static generateTokens = (userId, accessLifeSpan, refreshLifeSpan) => {
+        const accessToken = jwt.sign({ userId }, process.env.PUBLIC_KEY_SECRET, { expiresIn: accessLifeSpan });
+        const refreshToken = jwt.sign({ userId }, process.env.PRIVATE_KEY_SECRET, { expiresIn: refreshLifeSpan }); 
         return { accessToken, refreshToken };
     }
     
+
     static generateAccessToken = (userId) => {
-        return jwt.sign({ userId }, process.env.PRIVATE_KEY_SECRET, { expiresIn: '1d' });
+        return jwt.sign({ userId }, process.env.PRIVATE_KEY_SECRET, { expiresIn: process.env.ACCESS_TOKEN_LASTING });
     }
 
     static async storeRefreshToken(userId, refreshToken, deviceId) {
