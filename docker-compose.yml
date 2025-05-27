@@ -76,8 +76,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # networks:
-    #   - ecommerce
+    networks:
+      - ecommerce
 
 
   product-service:
@@ -131,6 +131,8 @@ services:
         condition: service_healthy
     env_file:
       - ./services/products/.env
+    networks:
+      - ecommerce
       
 
   inventory-consumer:
@@ -201,6 +203,8 @@ services:
       - redis
     env_file:
       - ./services/file-upload/.env 
+    networks: 
+      - ecommerce
 
   file-worker:
     build:
@@ -213,7 +217,9 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/file-upload/.env     
+      - ./services/file-upload/.env    
+    networks:
+      - ecommerce 
 
 
 volumes:
