@@ -133,7 +133,7 @@ services:
       - ./services/products/.env
     networks:
       - ecommerce
-      
+
 
   inventory-consumer:
     build:
@@ -189,8 +189,6 @@ services:
     networks:
       - ecommerce
   
-
-
   file-upload-service:
     build: ./services/file-upload
     container_name: file-upload-service
