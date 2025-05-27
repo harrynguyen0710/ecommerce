@@ -106,23 +106,27 @@ class InventoryService {
     return results;
   }
 
-  async getSkusByProductIds (rawIds) {
-    const productIds = rawIds.split(',');
-    console.log('Product IDs:', productIds);
+  async getSkusByProductIds(rawIds) {
+    const productIds = rawIds.split(",");
+
     const skus = await prisma.inventory.findMany({
       where: {
         productId: {
           in: productIds,
-        }
+        },
       },
       select: {
         sku: true,
         productId: true,
-      }
+      },
     });
 
     return skus;
+  }
 
+  async deleteAllInventory() {
+    const result = await prisma.inventory.deleteMany({});
+    return { deletedInventory: result.count };
   }
 }
 

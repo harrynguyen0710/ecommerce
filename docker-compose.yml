@@ -216,6 +216,8 @@ services:
         condition: service_healthy
     env_file:
       - ./services/file-upload/.env    
+    volumes:
+      - ./services/file-upload/uploads:/app/uploads
     networks:
       - ecommerce 
 
