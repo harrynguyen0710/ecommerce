@@ -4,8 +4,7 @@ async function connectMongo(retries = 5) {
   const uri = process.env.MONGO_URI;
   
   while (retries) {
-    console.log(`My uri::`, uri);
-    console.log(`PORT::`, process.env.PORT);  
+
     try {
       await mongoose.connect(uri, {
         maxPoolSize: 50,

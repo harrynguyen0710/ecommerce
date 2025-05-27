@@ -8,4 +8,5 @@ const kafka = new Kafka({
     brokers: [BROKERS]
 });
 
+
 module.exports = kafka
