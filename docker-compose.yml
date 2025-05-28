@@ -221,6 +221,20 @@ services:
     networks:
       - ecommerce 
 
+  logging-service:
+    build:
+      context: ./services/logging
+    container_name: logging-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/logging/.env 
+    ports:
+      - "5005:5005"
+    networks:
+      - ecommerce
+
 
 volumes:
   mongo_data:
