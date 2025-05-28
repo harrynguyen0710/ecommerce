@@ -1,4 +1,5 @@
 const { enqueueFileJob } = require('../services/fileJob.service');
+const { v4: uuidv4 } = require("uuid");
 
 async function handleUpload(req, res) {
     if (!req.file) {
