@@ -1,6 +1,6 @@
-const { prisma } = require("../../config/prisma");
+async function handleProductCreated({ productId, variants }, meta) {
+  const { correlationId, startTimestamp } = meta;
 
-async function handleProductCreated({ productId, variants }) {
   if (!productId || !Array.isArray(variants) || variants.length === 0) {
     throw new Error("Invalid productCreated payload");
   }
@@ -9,7 +9,9 @@ async function handleProductCreated({ productId, variants }) {
 
   for (const v of variants) {
     if (!v.sku || typeof v.sku !== "string") {
-      throw new Error(`Invalid or missing SKU for variant: ${JSON.stringify(v)}`);
+      throw new Error(
+        `Invalid or missing SKU for variant: ${JSON.stringify(v)}`
+      );
     }
 
     inventoryEntries.push({
@@ -26,11 +28,12 @@ async function handleProductCreated({ productId, variants }) {
       data: inventoryEntries,
       skipDuplicates: true,
     });
+
+    await trackBulkInsertProgress({
+      correlationId,
+      startTimestamp,
+    });
   } catch (error) {
     throw new Error(`Inventory insert failed: ${error.message}`);
   }
 }
-
-module.exports = {
-  handleProductCreated,
-};
