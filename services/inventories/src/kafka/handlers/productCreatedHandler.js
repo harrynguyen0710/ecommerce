@@ -6,12 +6,10 @@ async function handleProductCreated({ productId, variants }) {
   }
 
   const inventoryEntries = [];
-  
+
   for (const v of variants) {
     if (!v.sku || typeof v.sku !== "string") {
-      throw new Error(
-        `Invalid or missing SKU for variant: ${JSON.stringify(v)}`
-      );
+      throw new Error(`Invalid or missing SKU for variant: ${JSON.stringify(v)}`);
     }
 
     inventoryEntries.push({
@@ -24,15 +22,12 @@ async function handleProductCreated({ productId, variants }) {
   }
 
   try {
-    const result = await prisma.inventory.createMany({
+    await prisma.inventory.createMany({
       data: inventoryEntries,
       skipDuplicates: true,
     });
-
-    console.log(`✅ Bulk inventory insert: ${result.count} new items added.`);
   } catch (error) {
-    console.error("❌ Error inserting inventory in bulk:", error);
-    throw error;
+    throw new Error(`Inventory insert failed: ${error.message}`);
   }
 }
 

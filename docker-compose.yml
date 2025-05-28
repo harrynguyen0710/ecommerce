@@ -131,6 +131,9 @@ services:
         condition: service_healthy
     env_file:
       - ./services/products/.env
+    networks:
+      - ecommerce
+
 
   inventory-consumer:
     build:
@@ -198,7 +201,7 @@ services:
       - redis
     env_file:
       - ./services/file-upload/.env 
-    networks:
+    networks: 
       - ecommerce
 
   file-worker:
@@ -212,10 +215,25 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/file-upload/.env
+      - ./services/file-upload/.env    
+    volumes:
+      - ./services/file-upload/uploads:/app/uploads
+    networks:
+      - ecommerce 
+
+  logging-service:
+    build:
+      context: ./services/logging
+    container_name: logging-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/logging/.env 
+    ports:
+      - "5005:5005"
     networks:
       - ecommerce
-
 
 
 volumes:

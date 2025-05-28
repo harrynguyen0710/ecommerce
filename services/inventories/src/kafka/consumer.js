@@ -6,40 +6,36 @@ const consumer = kafka.consumer({ groupId: "inventory-group" });
 
 async function startConsumer() {
   await consumer.connect();
-
   await consumer.subscribe({ topic: "product.created", fromBeginning: false });
 
   await consumer.run({
     eachMessage: async ({ topic, message }) => {
       const payload = JSON.parse(message.value.toString());
-
+      const variants = payload.variants || [];
+      const correlationId = message.headers["x-correlation-id"]?.toString() || "no-id";
       const productId = payload.productId;
-      const MAX_RETRIES = 5;
 
+      const MAX_RETRIES = 5;
       let attempt = 0;
 
       while (attempt < MAX_RETRIES) {
         try {
-          await handleProductCreated(payload);
-
-          return; // handled successfully
+          await handleProductCreated(payload, { correlationId });
+          break;
         } catch (error) {
           attempt++;
-
-          console.warn(`Retry ${attempt}/${MAX_RETRIES} for ${productId}`);
+          console.warn(`[${correlationId}] Retry ${attempt}/${MAX_RETRIES} for ${productId}: ${error.message}`);
           await new Promise((res) => setTimeout(res, 1000 * attempt));
         }
       }
 
-      await sendToDlq(
-        "product.created.dlq",
-        {
+      if (attempt === MAX_RETRIES) {
+        await sendToDlq("product.created.dlq", {
           originalEvent: payload,
           reason: "Failed after retries",
-        },
-        productId
-      );
-    },
+        }, productId);
+      }
+    }
   });
 }
 

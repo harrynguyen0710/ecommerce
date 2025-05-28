@@ -60,6 +60,17 @@ class ProductController {
         .json({ error: "Failed to fetch product", details: error.message });
     }
   }
+
+  async  handleDeleteAllProducts(req, res) {
+  try {
+    const result = await productService.deleteAllProducts();
+    res.status(200).json({ message: "✅ All products deleted", ...result });
+  } catch (err) {
+    console.error("❌ Product deletion error:", err.message);
+    res.status(500).json({ error: "Failed to delete products" });
+  }
+}
+
 }
 
 module.exports = new ProductController();

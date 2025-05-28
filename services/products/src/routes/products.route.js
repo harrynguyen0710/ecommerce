@@ -18,4 +18,7 @@ router.get('/:id', productController.getProductById);
 // DELETE v1/api/products/:id
 // router.delete('/:id', productController.deleteProduct);
 
+router.delete("/delete-all", productController.handleDeleteAllProducts);
+
+
 module.exports = router;
