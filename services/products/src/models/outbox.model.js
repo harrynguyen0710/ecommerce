@@ -27,7 +27,13 @@ const OutboxSchema = new mongoose.Schema({
     },
     error: {
         type: String,
-    }
+    },
+
+      // ✅ Add this
+  metadata: {
+    type: Object,
+    default: {},
+  },
 });
 
 

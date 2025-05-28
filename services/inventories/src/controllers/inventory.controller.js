@@ -91,6 +91,16 @@ class InventoryController {
     }
   }
 
+  async handleDeleteAllInventory(req, res) {
+  try {
+    const result = await inventoryService.deleteAllInventory();
+    res.status(200).json({ message: "All inventory records deleted", ...result });
+  } catch (err) {
+    console.error("Inventory deletion error:", err.message);
+    res.status(500).json({ error: "Failed to delete inventory" });
+  }
+}
+
 }
 
 module.exports = new InventoryController();

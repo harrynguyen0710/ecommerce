@@ -10,8 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { syncAttributes } = require("../utils/syncAttributes");
 
 // clients
-const { getInventoryBySkus } = require("../../clients/inventory.client")
-
+const { getInventoryBySkus } = require("../../clients/inventory.client");
 
 class ProductService {
   constructor() {
@@ -19,9 +18,11 @@ class ProductService {
     this.OutboxEvent = OutboxEvent;
   }
 
-  async create({ title, variants }) {
+  async create({ title, variants }, meta) {
     const session = await mongoose.startSession();
     session.startTransaction();
+
+    const { correlationId, startTimestamp } = meta;
 
     try {
       const productId = uuidv4();
@@ -53,6 +54,10 @@ class ProductService {
           title,
           variants,
         },
+        metadata: {
+          correlationId,
+          startTimestamp,
+        },
       });
 
       await event.save({ session });
@@ -60,10 +65,17 @@ class ProductService {
       await session.commitTransaction();
       session.endSession();
 
+      console.log(`[${correlationId}] ✅ Product saved & outbox event created`);
+
       return product;
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
+      console.error(
+        `[${correlationId}] ❌ Product create failed:`,
+        error.message
+      );
+
       throw error;
     }
   }
@@ -84,15 +96,14 @@ class ProductService {
   }
 
   async getProductById(id, fields = "") {
-    
-    const product = await Product.findOne({ productId: id }).select(
-      `${fields} -createdAt -updatedAt`
-    ).lean();
-  
+    const product = await Product.findOne({ productId: id })
+      .select(`${fields} -createdAt -updatedAt`)
+      .lean();
+
     if (!product) return null;
 
     const skus = product.variants.map((v) => v.sku);
-    console.log("HERE", skus);  
+
     const inventoryMap = await getInventoryBySkus(skus);
 
     const enrichedVariants = product.variants.map((variant) => ({
@@ -108,9 +119,12 @@ class ProductService {
       ...product,
       variants: enrichedVariants,
     };
-    
   }
-  
+
+  async deleteAllProducts() {
+    const result = await Product.deleteMany({});
+    return { deletedProducts: result.deletedCount };
+  }
 }
 
 module.exports = new ProductService();
