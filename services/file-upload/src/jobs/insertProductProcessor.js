@@ -8,6 +8,8 @@ const { connectProducer } = require("../kafka/producer");
 const { produceProductCreated } = require("../kafka/produceProductCreated");
 
 const logMetrics = require("../utils/logMetrics");
+const setExpectedBulkCount = require("../utils/setExpectedBulkCount");
+
 
 (async () => {
   await connectProducer();
@@ -56,6 +58,10 @@ const worker = new Worker(
             const correlationId = job.data.correlationId;
             const startTimestamp = job.data.startTimestamp;
             const recordCount = processedRows;
+
+
+            await setExpectedBulkCount(correlationId, recordCount);
+
 
             await logMetrics({
               service: "file-upload-service",
