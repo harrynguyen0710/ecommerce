@@ -4,7 +4,9 @@ async function logMetrics({ service, event, startTimestamp, recordCount, correla
   const latencyMs = Date.now() - (startTimestamp || Date.now());
 
   try {
-    await producer.send({
+    connectDlqProducer();
+
+    await dlqProducer.send({
       topic: `metrics.${service}`,
       messages: [
         {
