@@ -4,6 +4,7 @@ async function sendEventToKafka(event) {
   try {
     console.log("sendEventToKafka::", event.payload);
     console.log('THE ACTUAL EVENT::', event.eventType);
+
     await kafkaProducer.send({
       topic: event.eventType,
       messages: [
@@ -18,6 +19,7 @@ async function sendEventToKafka(event) {
             "x-start-timestamp": `${
               event.metadata?.startTimestamp || Date.now()
             }`,
+
           },
         },
       ],
