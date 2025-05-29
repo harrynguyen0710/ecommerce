@@ -1,21 +1,19 @@
-const { enqueueFileJob } = require('../services/fileJob.service');
-const { v4: uuidv4 } = require("uuid");
+const { enqueueFileJob } = require("../services/fileJob.service");
+
+const { generateCorrelationMetadata } = require("../utils/correlation");
+
+const jobStatus = require('../enum/job.status');
 
 async function handleUpload(req, res) {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    const correlationId = uuidv4(); 
-    const startTimestamp = Date.now(); 
-
-    const job = await enqueueFileJob(req.file, { correlationId, startTimestamp });
+    const metadata = generateCorrelationMetadata();
+    
+    const job = await enqueueFileJob(req.file, metadata);
 
     return res.json({
         jobId: job.id,
-        status: 'QUEUED',
+        status: jobStatus.QUEUE,
         file: req.file.originalname,
-        correlationId,
+        correlationId: metadata.correlationId,
     });
 }
 

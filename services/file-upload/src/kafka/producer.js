@@ -1,4 +1,4 @@
-const kafka = require('../configs/kafka');
+const kafka = require('../../configs/kafka');
 
 const producer = kafka.producer();
 
