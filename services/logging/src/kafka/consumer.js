@@ -9,13 +9,17 @@ async function startKafkaConsumer() {
     await consumer.connect();
     await consumer.subscribe({
         topic: /^metrics\..*/,
-        fromBeginning: false,
+        fromBeginning: true,
     });
 
     await consumer.run({
         eachMessage: async ({ topic, message }) => {
+            
             try {
                 const payload = JSON.parse(message.value.toString());
+                
+                console.log(`📥 Consumed metric from ${topic}:`, payload);
+                
                 const { service, event, latencyMs, recordCount, timestamp } = payload;
                 
                 if (service && event && typeof latencyMs === 'number' && typeof recordCount === 'number') {
@@ -31,7 +35,8 @@ async function startKafkaConsumer() {
                 }
 
             } catch (error) {
-                console.error('❌ Failed to process Kafka message:', err);
+                console.error('❌ Failed to process Kafka message:', error);
+
             }
         }
     })

@@ -12,6 +12,8 @@ const { syncAttributes } = require("../utils/syncAttributes");
 // clients
 const { getInventoryBySkus } = require("../../clients/inventory.client");
 
+const logMetrics = require('../utils/logMetrics')
+
 class ProductService {
   constructor() {
     this.Product = Product;
@@ -23,7 +25,7 @@ class ProductService {
     session.startTransaction();
 
     const { correlationId, startTimestamp } = meta;
-
+    console.log('in product service::', meta)
     try {
       const productId = uuidv4();
 
@@ -62,10 +64,22 @@ class ProductService {
 
       await event.save({ session });
 
+
       await session.commitTransaction();
       session.endSession();
 
+            await logMetrics({
+              service: "product.service",
+              event: "product.service",
+              startTimestamp,
+              recordCount: 0,
+              correlationId,
+            });
+      
+
       console.log(`[${correlationId}] ✅ Product saved & outbox event created`);
+
+      // logg
 
       return product;
     } catch (error) {

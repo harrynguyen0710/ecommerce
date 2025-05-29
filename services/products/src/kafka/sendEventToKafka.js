@@ -2,9 +2,9 @@ const { kafkaProducer } = require("./producer");
 
 async function sendEventToKafka(event) {
   try {
-    const correlationId = event.metadata?.correlationId || "no-id";
-    const startTimestamp = event.metadata?.startTimestamp || Date.now();
-    
+    console.log("sendEventToKafka::", event.payload);
+    console.log('THE ACTUAL EVENT::', event.eventType);
+
     await kafkaProducer.send({
       topic: event.eventType,
       messages: [
@@ -15,8 +15,11 @@ async function sendEventToKafka(event) {
             eventId: event._id.toString(),
             sourceService: "product-service",
             timestamp: new Date().toISOString(),
-            "x-correlation-id": correlationId,
-            "x-start-timestamp": `${startTimestamp}`,
+            "x-correlation-id": event.metadata?.correlationId || "",
+            "x-start-timestamp": `${
+              event.metadata?.startTimestamp || Date.now()
+            }`,
+
           },
         },
       ],

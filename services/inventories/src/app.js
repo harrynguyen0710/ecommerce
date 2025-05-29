@@ -11,6 +11,13 @@ const { connectPrisma } = require('./config/prisma');
 
 connectPrisma(); 
 
+const { producer } = require('./config/kafka');
+
+(async () => {
+  await producer.connect();
+})();
+
+
 async function startApp() {
   await connectDlqProducer();
   await startConsumer();
