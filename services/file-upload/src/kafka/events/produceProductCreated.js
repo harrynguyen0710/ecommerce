@@ -1,9 +1,11 @@
-const { producer } = require('./producer');
+const { producer } = require('./producers/producer');
+
+const TOPICS = require('../topics');
 
 
 async function produceProductCreated(payload, headers = {}) {
     await producer.send({
-        topic: 'product.bulk.created',
+        topic: TOPICS.FILE_PARSED,
         messages: [{
             value: JSON.stringify(payload),
             headers,
