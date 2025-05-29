@@ -42,7 +42,7 @@ const worker = new Worker(
                 },
               ],
             };
-
+            console.log('jobs::', job.data);
             await produceProductCreated(payload, {
               "x-correlation-id": job.data.correlationId,
               "x-start-timestamp": `${job.data.startTimestamp}`,

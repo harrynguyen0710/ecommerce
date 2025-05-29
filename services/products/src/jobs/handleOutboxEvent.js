@@ -5,6 +5,7 @@ const { sendEventToKafka, sendToDLQ } = require("../kafka/sendEventToKafka");
 const MAX_RETRIES = 5;
 
 async function handleOutboxEvent(event) {
+  console.log('event on handleOutboxEvent::', event);
   const result = await sendEventToKafka(event);
 
   if (result.success) {
