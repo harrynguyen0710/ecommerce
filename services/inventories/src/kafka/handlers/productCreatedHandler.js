@@ -1,7 +1,10 @@
 const { prisma } = require("../../config/prisma");
 const { producer } = require("../../config/kafka");
 
+
 async function handleProductCreated({ productId, variants }, meta) {
+  const { correlationId, startTimestamp } = meta;
+
   if (!productId || !Array.isArray(variants) || variants.length === 0) {
     throw new Error("Invalid productCreated payload");
   }
@@ -35,6 +38,7 @@ async function handleProductCreated({ productId, variants }, meta) {
       data: inventoryEntries,
       skipDuplicates: true,
     });
+
     console.timeEnd("start creating");
 
     console.log("startTimestamp::", startTimestamp);
@@ -55,12 +59,9 @@ async function handleProductCreated({ productId, variants }, meta) {
           }),
         },
       ],
+
     });
   } catch (error) {
     throw new Error(`Inventory insert failed: ${error.message}`);
   }
 }
-
-module.exports = {
-  handleProductCreated,
-};
