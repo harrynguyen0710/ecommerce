@@ -5,5 +5,7 @@ const kafka = new Kafka({
     brokers: [process.env.KAFKA_BROKERS || 'kafka:9092']
 });
 
+const producer = kafka.producer();
 
-module.exports = { kafka }
+
+module.exports = { kafka, producer }
