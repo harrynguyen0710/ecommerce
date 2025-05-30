@@ -4,7 +4,7 @@ const { builderQuery } = require("../utils/queryBuilder");
 class ProductController {
   async createProduct(req, res, next) {
     try {
-      const product = await productService.create(req.body);
+      const product = await productService.create(req.body, req.meta);
       res.status(201).json(product);
     } catch (err) {
       next(err);

@@ -1,17 +1,17 @@
 const path = require('path');
+
 const { fileQueue } = require('../queues/file.queue');
 
-async function enqueueFileJob(file) {
-  const filename = path.basename(file.path);
+const { JOB_NAMES } = require("../constants/index");
 
-  await fileQueue.add('process-csv', {
-    filePath: `/app/uploads/${filename}`,
-    originalName: file.originalname,
-  });
-
-  return;
+async function enqueueFileJob(file, meta = {}) {
+    return await fileQueue.add(JOB_NAMES.PROCESS_CSV, {
+        filePath: path.resolve(file.path),
+        originalName: file.originalname,
+        ...meta,
+    });
 }
 
 module.exports = {
-  enqueueFileJob,
-};
+    enqueueFileJob,
+}

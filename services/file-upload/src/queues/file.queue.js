@@ -1,8 +1,10 @@
 const { Queue } = require('bullmq');
 
-const connection = require('../configs/redisConnection');
+const redisOptions = require('../configs/bullMQConnection');
 
-const fileQueue = new Queue('file-upload-queue', { connection });
+const { QUEUE_NAMES } = require("../constants/index")
+
+const fileQueue = new Queue(QUEUE_NAMES.FILE_UPLOAD, { connection: redisOptions });
 
 module.exports = { fileQueue };
 
