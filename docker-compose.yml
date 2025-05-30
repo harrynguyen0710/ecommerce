@@ -123,7 +123,7 @@ services:
     build:
       context: ./services/products
     container_name: product-bulk-consumer
-    command: node src/consumers/productBulkConsumer.js
+    command: node src/kafka/index.js
     depends_on:
       kafka:
         condition: service_healthy
