@@ -5,7 +5,6 @@ const app = express();
 const bodyParser = require('body-parser');
 
 const { startConsumer } = require('./kafka/consumer');
-const { connectDlqProducer } = require('./kafka/dlqProducer');
 
 const { connectPrisma } = require('./config/prisma');
 
@@ -19,12 +18,9 @@ const { producer } = require('./config/kafka');
 
 
 async function startApp() {
-  await connectDlqProducer();
   await startConsumer();
 }
 
-app.use(express.json());
-// app.use(bodyParser.json());
 
 // routes
 app.use('/v1/api', require('./routes/inventory.route'));

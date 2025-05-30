@@ -1,7 +1,7 @@
 const { prisma } = require("../config/prisma");
 
 
-async function createManyInventory(inventoryEntries) {
+async function createManyInventories(inventoryEntries) {
     await prisma.inventory.createMany({
         data: inventoryEntries,
     });
@@ -9,5 +9,5 @@ async function createManyInventory(inventoryEntries) {
 
 
 module.exports = {
-    createManyInventory,
+    createManyInventories,
 }
