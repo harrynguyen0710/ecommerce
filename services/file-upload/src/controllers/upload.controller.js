@@ -1,6 +1,6 @@
 const { enqueueFileJob } = require("../services/fileJob.service");
 
-const { generateCorrelationMetadata } = require("../utils/correlation");
+const { generateCorrelationMetadata } = require("../utils/tracing/correlation");
 
 const jobStatus = require('../enum/job.status');
 

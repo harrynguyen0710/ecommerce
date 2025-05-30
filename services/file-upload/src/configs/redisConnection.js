@@ -24,7 +24,7 @@ const redis = new IORedis({
     return shouldReconnect;
   },
 
-  maxRetriesPerRequest: 5,
+  maxRetriesPerRequest: null,
   enableOfflineQueue: true, 
 });
 

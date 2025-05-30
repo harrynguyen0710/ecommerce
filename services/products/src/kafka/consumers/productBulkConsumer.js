@@ -32,6 +32,4 @@ async function bulkInsertProductConsumer() {
 
 }
 
-module.exports = {
-  bulkInsertProductConsumer,
-};
+module.exports = bulkInsertProductConsumer;

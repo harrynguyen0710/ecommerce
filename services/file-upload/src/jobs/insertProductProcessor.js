@@ -1,16 +1,14 @@
 const { Worker } = require("bullmq");
-const connection = require("../configs/redisConnection");
+const redis = require("../configs/redisConnection");
 const { processFileJob } = require("../services/jobHandler");
-const { connectProducer } = require("../kafka/producer");
 
 const { QUEUE_NAMES } = require("../constants/index");
 
-(async () => await connectProducer())();
 
 const worker = new Worker(
   QUEUE_NAMES.FILE_UPLOAD,
   async (job) => await processFileJob(job),
-  { connection }
+  { connection: redis }
 );
 
 worker.on("completed", (job) => {

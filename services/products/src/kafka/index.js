@@ -1,15 +1,6 @@
-const bulkInsertProductConsumer = require("./consumers/productBulkConsumer");
+const startConsumer = require("./consumers/startConsumer");
 
-async function startConsumer() {
-  try {
-    await Promise.all([bulkInsertProductConsumer()]);
-
-    console.log("✅ All Kafka consumers started");
-  } catch (error) {
-    console.error("❌ Failed to start Kafka consumers:", error.message);
-    process.exit(1);
-  }
-}
-
-module.exports = startConsumer;
-
+startConsumer().catch((err) => {
+  console.error("❌ Failed to start consumer:", err.message);
+  process.exit(1);
+});

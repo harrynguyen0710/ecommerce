@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const { connectProducer } = require('../kafka/producer');
+const { getConnectedProducer } = require("../kafka/producerManager");
+
 const { processOutboxEvents } = require('../kafka/events/processOutboxEvents');
 
 async function main() {
@@ -9,7 +10,7 @@ async function main() {
     await mongoose.connect(process.env.MONGO_URI);
 
     // connect to producer
-    await connectProducer();
+    await getConnectedProducer();
 
     setInterval(async () => {
         await processOutboxEvents();

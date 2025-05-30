@@ -9,7 +9,7 @@ const sendBatchEvents = require("./sendBatchEvents");
 const fallbackRetryEvents = require("../events/fallbackRetryEvents")
 
 async function processOutboxEvents() {
-  const pendingEvents = getEvents();
+  const pendingEvents = await getEvents();
 
   console.log(`📦 Processing ${pendingEvents.length} outbox events...`);
 
