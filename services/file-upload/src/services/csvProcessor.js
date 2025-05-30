@@ -2,23 +2,25 @@ const fs = require("fs");
 const csv = require("csv-parser");
 
 function parseCSV(filePath, onRow) {
-    return new Promise((resolve, reject) => {
-        let failed = 0;
-        let success = 0;
+  return new Promise((resolve, reject) => {
+    const promises = [];
+    let success = 0;
+    let failed = 0;
 
-        fs.createReadStream(filePath)
-            .pipe(csv())
-            .on("data", async (row) => {
-                try {
-                    await onRow(row);
-                    success++;
-                } catch {
-                    failed++;
-                }
-            })
-            .on("end", () => resolve({ success, failed }))
-            .on("error", reject);
-    });
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on("data", (row) => {
+        const p = onRow(row)
+          .then(() => success++)
+          .catch(() => failed++);
+        promises.push(p);
+      })
+      .on("end", async () => {
+        await Promise.allSettled(promises);
+        resolve({ success, failed });
+      })
+      .on("error", reject);
+  });
 }
 
 module.exports = { parseCSV }
