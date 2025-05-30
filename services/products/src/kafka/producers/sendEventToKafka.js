@@ -1,6 +1,6 @@
 const { getConnectedProducer } = require("../producerManager");
 
-const buildKafkaHeaders = require("../../utils/buildKafkaHeaders");
+const buildKafkaHeaders = require("../../kafka/utils/buildKafkaHeaders");
 
 const { SERVICE_INFO } = require("../../constants/index");
 

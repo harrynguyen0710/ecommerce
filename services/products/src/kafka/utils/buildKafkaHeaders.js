@@ -1,4 +1,4 @@
-const { KAFKA_HEADERS } = require("../constants/index");
+const { KAFKA_HEADERS } = require("../../constants/index");
 
 function buildKafkaHeaders(event, sourceService) {
   return {

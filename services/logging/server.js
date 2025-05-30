@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 
 require("dotenv").config();
 
-const startKafkaConsumer = require("./src/kafka/consumer");
+const startKafkaConsumer = require("./src/kafka/consumers/metricConsumer");
 
 const startTTLCleaner = require("./src/utils/ttlCleaner");
 

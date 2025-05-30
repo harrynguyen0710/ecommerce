@@ -134,24 +134,6 @@ services:
     networks:
       - ecommerce
 
-
-  inventory-consumer:
-    build:
-      context: ./services/inventories
-    container_name: inventory-consumer
-    command: node src/app.js
-    depends_on:
-      kafka:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy 
-    env_file:
-      - ./services/inventories/.env 
-    
-    networks:
-      - ecommerce
-
-
   inventory-service:
     build: ./services/inventories
     container_name: inventory-service

@@ -1,4 +1,4 @@
-const { kafka } = require("../config/kafka");
+const kafka  = require("../config/kafka");
 
 const { routeMessage } = require("./routeMessage");
 

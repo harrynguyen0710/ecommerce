@@ -1,7 +1,7 @@
 const { parseCSV } = require("./csvProcessor");
 const transformRow = require("../utils/csv/transformRow");
 
-const { produceProductCreated } = require("../kafka/produceProductCreated");
+const { produceProductCreated } = require("../kafka/events/produceProductCreated");
 
 const logMetrics = require("../utils/logMetrics");
 
