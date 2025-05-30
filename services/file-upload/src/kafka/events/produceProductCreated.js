@@ -1,4 +1,4 @@
-const { producer } = require('./producers/producer');
+const { producer } = require("../producer");
 
 const TOPICS = require('../topics');
 
