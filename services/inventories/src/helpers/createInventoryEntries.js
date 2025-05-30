@@ -1,6 +1,6 @@
 const { INVENTORY_DEFAULT } = require("../constants/index");
 
-function createInventoryEntries(variants) {
+function createInventoryEntries(variants, productId) {
     const inventoryEntries = [];
 
     for (const v of variants) {
