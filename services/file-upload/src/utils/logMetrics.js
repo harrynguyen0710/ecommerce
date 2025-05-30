@@ -1,11 +1,11 @@
-const { producer, connectProducer } = require('../kafka/producer');
+const { getConnectedProducer } = require("../kafka/producerManager");
 
 async function logMetrics({ service, event, startTimestamp, recordCount, correlationId = 'unknown' }) {
     const latencyMs = Date.now() - (startTimestamp || Date.now());
-    
-    connectProducer();
 
     try {
+        const producer = await getConnectedProducer();
+
         await producer.send({
             topic: `metrics.${service}`,
             messages: [
