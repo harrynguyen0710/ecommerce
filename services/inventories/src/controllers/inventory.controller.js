@@ -10,7 +10,7 @@ class InventoryController {
       }
 
       const result = await inventoryService.getInventoryBySkus(skus);
-      console.log("Result:", result);
+
       if (!result || result.length === 0) {
         return res
           .status(404)
@@ -76,7 +76,7 @@ class InventoryController {
   async getSkus (req, res) {
     try {
       const rawIds = req.query.productIds;
-      console.log('Raw IDs:', rawIds);
+
       if (!rawIds) {
         return res.status(400).json({ error: "Missing SKUs query parameter" });
       }

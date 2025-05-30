@@ -1,11 +1,11 @@
 const { Kafka } = require('kafkajs');
 
+const KAFKA_BROKERS = process.env.KAFKA_BROKERS;
+const KAFKA_CLIENT_ID = process.env.KAFKA_CLIENT_ID;
+
 const kafka = new Kafka({
-    clientId: 'inventory-service',
-    brokers: [process.env.KAFKA_BROKERS || 'kafka:9092']
+    clientId: KAFKA_CLIENT_ID,
+    brokers: [KAFKA_BROKERS]
 });
 
-const producer = kafka.producer();
-
-
-module.exports = { kafka, producer }
+module.exports = kafka;
