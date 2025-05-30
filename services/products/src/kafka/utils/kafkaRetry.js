@@ -1,4 +1,4 @@
-const consumer = require("../kafka/consumer");
+const consumer = require("../consumer");
 
 
 async function waitForKafkaWithRetry(attempts = 5, delay = 3000) {

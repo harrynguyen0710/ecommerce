@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
-require('dotenv').config();
-
 const { connectProducer } = require('../kafka/producer');
-const { processOutboxEvents } = require('./processOutboxEvents');
+const { processOutboxEvents } = require('../kafka/events/processOutboxEvents');
 
 async function main() {
     console.log('Starting outbox worker...');
