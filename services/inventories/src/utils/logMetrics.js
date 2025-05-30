@@ -1,12 +1,12 @@
-const { dlqProducer, connectDlqProducer } = require("../kafka/dlqProducer");
+const { getConnectedProducer } = require("../kafka/producer");
 
 async function logMetrics({ service, event, startTimestamp, recordCount, correlationId = 'unknown' }) {
   const latencyMs = Date.now() - (startTimestamp || Date.now());
 
   try {
-    connectDlqProducer();
+    const producer = await getConnectedProducer();
 
-    await dlqProducer.send({
+    await producer.send({
       topic: `metrics.${service}`,
       messages: [
         {
@@ -21,8 +21,8 @@ async function logMetrics({ service, event, startTimestamp, recordCount, correla
         }
       ]
     });
-  } catch (err) {
-    console.error('❌ Failed to log metrics:', err.message);
+  } catch (error) {
+    console.error('❌ Failed to log metrics:', error.message);
   }
 }
 
