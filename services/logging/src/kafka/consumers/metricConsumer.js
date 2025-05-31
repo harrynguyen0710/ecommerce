@@ -12,7 +12,7 @@ const consumer = kafka.consumer({ groupId: KAFKA_GROUP_ID });
 async function startKafkaConsumer() {
   await consumer.connect();
 
-  await subscribeWithPattern(consumer, /^metrics\..*/);
+  await subscribeWithPattern(consumer, /^metrics\..*/, true);
 
 
   await consumer.run({

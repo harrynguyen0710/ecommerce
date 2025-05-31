@@ -159,6 +159,8 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - ./services/inventories/.env 
     volumes:
@@ -175,6 +177,8 @@ services:
       kafka:
         condition: service_healthy
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     env_file:
       - ./services/inventories/.env

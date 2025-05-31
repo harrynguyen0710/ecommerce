@@ -1,7 +1,12 @@
 const { getConnectedProducer } = require("../kafka/producer");
 
-async function logMetrics({ service, event, startTimestamp, recordCount, correlationId = 'unknown' }) {
-  const latencyMs = Date.now() - (startTimestamp || Date.now());
+async function logMetrics({ service, event, correlationId, recordCount, startTimestamp }) {
+  const latencyMs = Date.now() - (startTimestamp);
+
+  console.log('in logging Metrics:::', Date.now())
+  console.log('current_day::', startTimestamp)
+  console.log('final one::', Date.now() - startTimestamp);
+  console.log('------------------------------');
 
   try {
     const producer = await getConnectedProducer();

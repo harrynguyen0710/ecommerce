@@ -5,7 +5,7 @@ const { produceProductCreated } = require("../kafka/events/produceProductCreated
 
 const logMetrics = require("../utils/logMetrics");
 
-const setExpectedBulkCount = require("../utils/setExpectedBulkCount");
+const { setExpectedBulkCount, setBulkStartTime } = require("../utils/bulkTracking");
 
 const { KAFKA_HEADERS, SERVICE_NAMES, METRIC_EVENTS } = require("../constants/index");
 
@@ -14,6 +14,8 @@ async function processFileJob(job) {
 
   console.log(`✅ Processing file: ${originalName}`);
 
+  await setBulkStartTime(correlationId, startTimestamp);
+    
   const { success, failed } = await parseCSV(filePath, async (row) => {
     const payload = transformRow(row);
     await produceProductCreated(payload, {
@@ -21,7 +23,8 @@ async function processFileJob(job) {
       [KAFKA_HEADERS.START_TIMESTAMP]: `${startTimestamp}`,
     });
   });
-
+  
+  
   await setExpectedBulkCount(correlationId, success);
 
   await logMetrics({
