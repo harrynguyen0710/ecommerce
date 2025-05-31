@@ -1,6 +1,6 @@
 const kafka = require("../configs/kafka");
 
-async function subscribeWithPattern(consumer, pattern) {
+async function subscribeWithPattern(consumer, pattern, fromBeginning = true) {
   const admin = kafka.admin();
 
   await admin.connect();
@@ -16,9 +16,9 @@ async function subscribeWithPattern(consumer, pattern) {
   }
 
   for (const topic of matchedTopics) {
-    await consumer.subscribe({ topic, fromBeginning: false });
+    await consumer.subscribe({ topic, fromBeginning });
     console.log(`📡 Subscribed to: ${topic}`);
   }
 }
 
-module.exports = subscribeWithPattern
+module.exports = subscribeWithPattern;
