@@ -1,7 +1,6 @@
 'use strict'
 
 const app = require('./src/app');
-const dotenv = require('dotenv');   
 
 require('dotenv').config();
 

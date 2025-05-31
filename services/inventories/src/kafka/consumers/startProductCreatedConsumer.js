@@ -1,32 +1,37 @@
-const kafka  = require("../config/kafka");
+const kafka  = require("../../config/kafka");
 
-const { routeMessage } = require("./routeMessage");
+const { routeMessage } = require("../routeMessage");
 
-const topics = require("./topics");
+const topics = require("../topics");
 
-const { parseKafkaHeaders } = require("./utils/metadataParser");
+const { parseKafkaHeaders } = require("../utils/metadataParser");
 
-const { retryWithBackoff } = require("./utils/retryWithBackoff");
+const { retryWithBackoff } = require("../utils/retryWithBackoff");
 
-const sendToDlq = require("./producers/sendToDlq");
+const sendToDlq = require("../producers/sendToDlq");
 
-const { GROUP_CONSUMERS } = require("../constants/index");
+const { GROUP_CONSUMERS } = require("../../constants/index");
 
 const consumer = kafka.consumer({ groupId: GROUP_CONSUMERS.INVENTORY_GROUP });
 
-async function startConsumer() {
+async function startProductCreatedConsumer() {
   await consumer.connect();
   await consumer.subscribe({ topic: topics.PRODUCT_CREATED, fromBeginning: true });
 
   await consumer.run({
     eachMessage: async ({ topic, message }) => {
+      console.log("📩 Received message on", topic);
+      console.log("📦 Message value:", message.value.toString());
       const payload = JSON.parse(message.value.toString());
 
       const meta = parseKafkaHeaders(message.headers);
 
+      console.log('meta::', meta)
+
       const productId = payload.productId;
 
       try {
+        console.log('comming to retry:: 1');
         await retryWithBackoff(() => routeMessage(topic, payload, meta), {
           
           retries: 5,
@@ -37,6 +42,7 @@ async function startConsumer() {
             ),
         });
       } catch (finalError) {
+        console.log('comming to dql');
         await sendToDlq(
           topics.DLQ_PRODUCT_CREATED,
           {
@@ -50,4 +56,4 @@ async function startConsumer() {
   });
 }
 
-module.exports = { startConsumer };
+module.exports =  startProductCreatedConsumer;

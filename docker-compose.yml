@@ -167,6 +167,23 @@ services:
     networks:
       - ecommerce
 
+  inventory-consumer:
+    build: ./services/inventories
+    container_name: inventory-consumer
+    command: node src/kafkaWorker.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./services/inventories/.env
+    volumes:
+      - ./services/inventories:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
   discount-service:
     build: ./services/discounts
     container_name: discount-service
@@ -183,7 +200,7 @@ services:
       - ./services/discounts:/app
       - /app/node_modules
     networks:
-      - ecommerce
+      - ecommerce 
   
   file-upload-service:
     build: ./services/file-upload

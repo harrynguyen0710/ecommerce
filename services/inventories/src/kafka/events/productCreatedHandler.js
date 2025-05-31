@@ -10,6 +10,10 @@ const {
 
 async function handleProductCreated({ productId, variants }, meta) {
   const { correlationId, startTimestamp } = meta;
+  console.log('productId::', productId);
+  console.log('variants::',variants);
+
+  console.log('meta::', meta);
 
   if (!productId || !Array.isArray(variants) || variants.length === 0) {
     throw new Error("Invalid productCreated payload");
@@ -18,8 +22,10 @@ async function handleProductCreated({ productId, variants }, meta) {
   try {
     
     const inventoryEntries = createInventoryEntries(variants, productId);
+    console.log('inventory entry::', inventoryEntries)
+    await createManyInventories(inventoryEntries);
 
-    await createManyInventories();
+    console.log('DONE');
 
     await logMetrics({
         service: SERVICE_INFOR.NAME,

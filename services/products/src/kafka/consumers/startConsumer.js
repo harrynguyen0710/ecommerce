@@ -1,7 +1,11 @@
 const bulkInsertProductConsumer = require("./productBulkConsumer");
 
+const connectMongo = require("../../databases/mongo");
+
 async function startConsumer() {
   try {
+    await connectMongo();
+    
     console.log("✅ All Kafka consumers started");
     
     await Promise.all([bulkInsertProductConsumer()]);

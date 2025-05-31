@@ -7,7 +7,7 @@ async function produceProductCreated(payload, headers = {}) {
     const producer = await getConnectedProducer();
     
     await producer.send({
-        topic: TOPICS.FILE_PARSED,
+        topic: TOPICS.PRODUCT_CREATED,
         messages: [{
             value: JSON.stringify(payload),
             headers,
