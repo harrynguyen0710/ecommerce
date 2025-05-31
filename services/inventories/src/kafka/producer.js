@@ -13,6 +13,8 @@ async function getConnectedProducer() {
 
         console.log("✅ Kafka producer connected");
     }
+
+    return connectedProducer
 }
 
 module.exports = { 

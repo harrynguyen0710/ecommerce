@@ -1,29 +1,25 @@
-const kafka = require("../../configs/kafka");
 
 const handleMetricMessage = require("../handlers/metricHandler");
 
-const subscribeToTopic = require("../utils/subscribeToTopic");
+const subscribeWithPattern = require("../kafkaConsumer");
 
-const { METRICS_TOPIC_PATTERN } = require("../topic");
+const kafka = require("../../configs/kafka");
 
 const KAFKA_GROUP_ID = process.env.KAFKA_GROUP_ID;
 
-async function startKafkaConsumer() {
-  const consumer = kafka.consumer({ groupId: KAFKA_GROUP_ID });
+const consumer = kafka.consumer({ groupId: KAFKA_GROUP_ID });
 
+async function startKafkaConsumer() {
   await consumer.connect();
 
-  await subscribeToTopic({
-    consumer,
-    topics: [METRICS_TOPIC_PATTERN],
-    fromBeginning: true,
-    retries: 5,
-    retryDelayMs: 1000,
-  });
+  await subscribeWithPattern(consumer, /^metrics\..*/);
+
 
   await consumer.run({
     eachMessage: async ({ topic, message }) => {
       try {
+        console.log(`📨 [${topic}] Message:`, message.value.toString());
+
         handleMetricMessage(message.value.toString());
       } catch (error) {
         console.error("❌ Failed to process Kafka message:", err);

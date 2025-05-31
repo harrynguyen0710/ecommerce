@@ -1,5 +1,5 @@
 const TOPICS = {
-  PRODUCT_CREATED: 'product.created',
+  PRODUCT_CREATED: 'product.bulk.created',
   FILE_PARSED: 'product.bulk.csv.read',
 }
 

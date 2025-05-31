@@ -3,7 +3,7 @@ async function retryWithBackoff(task, { retries = 5, delay = 1000, onRetry }) {
 
     while (attempt < retries) {
         try {
-
+            return await task();
         } catch (error) {
             attempt++;
             

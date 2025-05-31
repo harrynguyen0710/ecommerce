@@ -1,20 +1,15 @@
-require('dotenv').config()
-
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
-
-const { startConsumer } = require('./kafka/consumer');
 
 const { connectPrisma } = require('./config/prisma');
 
+
 connectPrisma(); 
 
-
-async function startApp() {
-  await startConsumer();
-}
-
+app.use((req, res, next) => {
+  console.log(`🛰️ Incoming request: ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 // routes
 app.use('/v1/api', require('./routes/inventory.route'));
@@ -34,9 +29,5 @@ app.use((error, req, res, next) => {
         message: error.message || 'Internal Server Error',
     });
 });
-
-
-startApp();
-
 
 module.exports = app;
