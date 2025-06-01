@@ -6,13 +6,13 @@ const TOPICS = require('../topics');
 async function produceProductCreated(payload, headers = {}) {
     const producer = await getConnectedProducer();
     console.log('payload::', payload);
-    // await producer.send({
-    //     topic: TOPICS.PRODUCT_CREATED,
-    //     messages: [{
-    //         value: JSON.stringify(payload),
-    //         headers,
-    //     }],
-    // })
+    await producer.send({
+        topic: TOPICS.PRODUCT_CREATED,
+        messages: [{
+            value: JSON.stringify(payload),
+            headers,
+        }],
+    })
 }
 
 module.exports = {
