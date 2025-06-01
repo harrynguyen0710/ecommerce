@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 
 // utils
 const { syncAttributes } = require("../utils/syncAttributes");
+const chunkArray = require("../utils/chunkArray");
 
 // clients
 const { getInventoryBySkus } = require("../../clients/inventory.client");
@@ -90,6 +91,82 @@ class ProductService {
 
       throw error;
     }
+  }
+
+  async insertManyProducts(products, chunkSize = 5000) {
+
+    const chunks = chunkArray(products, chunkSize);
+    let totalInserted = 0;
+
+    console.time(`⏱ Total insert time`);
+
+    for (const [chunkIndex, chunk] of chunks.entries()) {
+      try {
+        const processedProducts = [];
+        const outboxEvents = [];
+
+        for (const productData of chunk) {
+          const productId = uuidv4();
+          const {
+            title,
+            description,
+            brand,
+            category,
+            tags,
+            variants,
+            status,
+          } = productData;
+
+          const result = syncAttributes(variants);
+
+          if (!result) {
+            continue;
+          }
+
+          const { colorSet, sizeSet } = result;
+
+          processedProducts.push({
+            productId,
+            title,
+            description,
+            brand,
+            category,
+            tags,
+            variants,
+            attributes: {
+              material: productData.attributes?.material || [],
+              color: Array.from(colorSet),
+              size: Array.from(sizeSet),
+            },
+            status: status || "active",
+          });
+
+          outboxEvents.push({
+            eventType: "product.created",
+            payload: { productId, title, variants },
+          });
+        }
+
+        const [inserted, events] = await Promise.all([
+          Product.insertMany(processedProducts, { ordered: false }),
+          OutboxEvent.insertMany(outboxEvents, { ordered: false }),
+        ]);
+
+        totalInserted += inserted.length;
+
+        console.log(
+          `✅ Chunk ${chunkIndex + 1}/${chunks.length}: Inserted ${
+            inserted.length
+          } products`
+        );
+      } catch (error) {
+        console.error(`❌ Chunk ${chunkIndex + 1} failed:`, error.message);
+      }
+    }
+
+    console.timeEnd(`⏱ Total insert time`);
+    return totalInserted;
+    
   }
 
   async getAll({ filters, sort, skip, limit }) {

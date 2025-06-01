@@ -9,7 +9,15 @@ async function getConnectedProducer() {
 
   if (!connectingPromise) {
     connectingPromise = (async () => {
-      const producer = kafka.producer({ retry });
+      
+      const producer = kafka.producer({
+        retry,
+        idempotent: true,
+        maxInFlightRequests: 1,
+        maxRequestSize: 5 * 1024 * 1024, // 5MB
+        allowAutoTopicCreation: false,
+      });
+
       await producer.connect();
       connectedProducer = producer;
       console.log("✅ Kafka producer connected");
