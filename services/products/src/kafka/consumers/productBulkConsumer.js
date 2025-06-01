@@ -19,42 +19,39 @@ async function bulkInsertProductConsumer() {
   });
 
   await consumer.run({
-    eachMessage: async ({ topic, partition, message }) => {
-      const payload = JSON.parse(message.value.toString());
+    eachBatch: async ({
+      batch,
+      resolveOffset,
+      heartbeat,
+      commitOffsetsIfNecessary,
+    }) => {
+      try {
+        const products = [];
 
-      console.log('message::', message);
-      console.log('payload::', payload);
+        for (const message of batch.messages) {
+          const payload = JSON.parse(message.value.toString());
+          
+          console.log("payload::", payload);
 
-      const correlationId =
-        message.headers?.[KAFKA_HEADERS.CORRELATION_ID]?.toString() || "no-id";
-      const startTimestamp = parseInt(
-        message.headers?.[KAFKA_HEADERS.START_TIMESTAMP]?.toString() ||
-          `${Date.now()}`,
-        10
-      );
-
-      let retry = 0;
-
-      while (retry < MAX_RETRIES) {
-        try {
-          await productService.create(payload, {
-            correlationId,
-            startTimestamp,
-          });
-          break;
-        } catch (error) {
-          console.error(
-            `❌ Failed to process message. Retry #${retry}`,
-            error.message
-          );
-          retry++;
-          if (retry === MAX_RETRIES) {
-            sendToDLQ(payload.event, error);
-            console.error(
-              `💀 Max retries reached for correlationId: ${correlationId}`
-            );
+          if (!Array.isArray(payload)) {
+            console.error("❌ Expected payload to be an array of products");
+            continue;
           }
+
+          products.push(...payload);
+
+          resolveOffset(message.offset);
+
+          await heartbeat();
         }
+        if (products.length > 0) {
+          await productService.insertManyProducts(products);
+          console.log(`✅ Inserted ${products.length} products.`);
+        }
+
+        await commitOffsetsIfNecessary();
+      } catch (error) {
+        console.error("Error happens when insert many products");
       }
     },
   });
