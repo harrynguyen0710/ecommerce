@@ -16,8 +16,8 @@ async function processFileJob(job) {
 
   await setBulkStartTime(correlationId, startTimestamp);
     
-  const { success, failed } = await parseCSV(filePath, async (row) => {
-    const payload = transformRow(row);
+  const { success, failed } = await parseCSV(filePath, async (rows) => {
+    const payload = transformRow(rows);
     await produceProductCreated(payload, {
       [KAFKA_HEADERS.CORRELATION_ID] : correlationId,
       [KAFKA_HEADERS.START_TIMESTAMP]: `${startTimestamp}`,
