@@ -10,6 +10,8 @@ const sendToDLQ = require("../producers/sendToDLQ");
 
 const MAX_RETRIES = 5;
 
+const trackBulkInsertProgress = require("../../utils/trackBulkProgress");
+
 async function bulkInsertProductConsumer() {
   await waitForKafkaWithRetry();
 
@@ -24,19 +26,31 @@ async function bulkInsertProductConsumer() {
       resolveOffset,
       heartbeat,
       commitOffsetsIfNecessary,
+      isRunning,
+      isStale,
     }) => {
       try {
+        console.log(
+          `📦PID:  ${process.pid} |  Partition: ${batch.partition} | Batch size: ${batch.messages.length}`
+        );
+
         const products = [];
+        
+        const correlationId = batch.messages[0]?.headers?.['x-correlation-id']?.toString();
 
         for (const message of batch.messages) {
           const payload = JSON.parse(message.value.toString());
-          
-          console.log("payload::", payload);
+
+          if (!isRunning() || isStale()) {
+            break;
+          }
 
           if (!Array.isArray(payload)) {
             console.error("❌ Expected payload to be an array of products");
             continue;
           }
+
+          await heartbeat();
 
           products.push(...payload);
 
@@ -44,9 +58,20 @@ async function bulkInsertProductConsumer() {
 
           await heartbeat();
         }
+
         if (products.length > 0) {
+          
           await productService.insertManyProducts(products);
+          
+          await heartbeat();
+          
           console.log(`✅ Inserted ${products.length} products.`);
+
+          await trackBulkInsertProgress({
+            correlationId,
+            recordCount: products.length,
+            
+          });
         }
 
         await commitOffsetsIfNecessary();

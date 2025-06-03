@@ -3,27 +3,27 @@ const { getConnectedProducer } = require("../kafka/producerManager");
 async function logMetrics({ service, event, startTimestamp, recordCount, correlationId = 'unknown' }) {
     const latencyMs = Date.now() - (startTimestamp || Date.now());
 
-    try {
-        const producer = await getConnectedProducer();
+    // try {
+    //     const producer = await getConnectedProducer();
 
-        await producer.send({
-            topic: `metrics.${service}`,
-            messages: [
-                {
-                    value: JSON.stringify({
-                        service,
-                        event,
-                        latencyMs,
-                        recordCount,
-                        timestamp: new Date().toISOString(),
-                        correlationId,
-                    })
-                }
-            ]
-        });
-    } catch (error) {
-        console.error('❌ Failed to log metrics:', error.message);
-    }
+    //     await producer.send({
+    //         topic: `metrics.${service}`,
+    //         messages: [
+    //             {
+    //                 value: JSON.stringify({
+    //                     service,
+    //                     event,
+    //                     latencyMs,
+    //                     recordCount,
+    //                     timestamp: new Date().toISOString(),
+    //                     correlationId,
+    //                 })
+    //             }
+    //         ]
+    //     });
+    // } catch (error) {
+    //     console.error('❌ Failed to log metrics:', error.message);
+    // }
 }
 
 module.exports = logMetrics;

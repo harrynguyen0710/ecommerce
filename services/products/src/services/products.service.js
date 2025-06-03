@@ -15,6 +15,7 @@ const { getInventoryBySkus } = require("../../clients/inventory.client");
 
 const logMetrics = require("../utils/logMetrics");
 
+
 class ProductService {
   constructor() {
     this.Product = Product;
@@ -93,64 +94,31 @@ class ProductService {
     }
   }
 
-  async insertManyProducts(products, chunkSize = 5000) {
+  async insertManyProducts(products, chunkSize = 12000) {
 
     const chunks = chunkArray(products, chunkSize);
     let totalInserted = 0;
 
-    console.time(`⏱ Total insert time`);
 
     for (const [chunkIndex, chunk] of chunks.entries()) {
       try {
-        const processedProducts = [];
-        const outboxEvents = [];
+        
+        console.time("totalTime::");
 
-        for (const productData of chunk) {
-          const productId = uuidv4();
-          const {
-            title,
-            description,
-            brand,
-            category,
-            tags,
-            variants,
-            status,
-          } = productData;
-
-          const result = syncAttributes(variants);
-
-          if (!result) {
-            continue;
+        const outboxEvents = chunk.map((product) => ({
+          eventType: "product.created",
+          payload: {
+            productId: product.productId,
+            variants: product.variants,
           }
-
-          const { colorSet, sizeSet } = result;
-
-          processedProducts.push({
-            productId,
-            title,
-            description,
-            brand,
-            category,
-            tags,
-            variants,
-            attributes: {
-              material: productData.attributes?.material || [],
-              color: Array.from(colorSet),
-              size: Array.from(sizeSet),
-            },
-            status: status || "active",
-          });
-
-          outboxEvents.push({
-            eventType: "product.created",
-            payload: { productId, title, variants },
-          });
-        }
-
+        }))
+       
         const [inserted, events] = await Promise.all([
-          Product.insertMany(processedProducts, { ordered: false }),
+          Product.insertMany(chunk, { ordered: false }),
           OutboxEvent.insertMany(outboxEvents, { ordered: false }),
         ]);
+
+        console.timeEnd("totalTime::");
 
         totalInserted += inserted.length;
 
@@ -164,7 +132,6 @@ class ProductService {
       }
     }
 
-    console.timeEnd(`⏱ Total insert time`);
     return totalInserted;
     
   }

@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require("uuid");
+
 function transformRow(row) {
   let attributes = {};
   let variants = [];
@@ -24,7 +26,7 @@ function transformRow(row) {
   }
 
   return {
-    productId: row.productId,
+    productId: uuidv4(),
     title: row.title,
     description: row.description,
     brand: row.brand,

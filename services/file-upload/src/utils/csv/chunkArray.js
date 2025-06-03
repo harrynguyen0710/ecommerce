@@ -1,4 +1,4 @@
-function chunkArray(arr, size) {
+function    chunkArray(arr, size) {
     const chunks = [];
 
     for (let i = 0; i < arr.length; i += size) {
