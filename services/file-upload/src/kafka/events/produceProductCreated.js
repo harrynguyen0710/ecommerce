@@ -1,7 +1,7 @@
 const chunkArray = require("../../utils/csv/chunkArray");
 const { getConnectedProducer } = require("../producerManager");
 
-const MAX_BATCH_SIZE = 25000; // messages;
+const MAX_BATCH_SIZE = 18500; // messages;
 
 
 const TOPICS = require("../topics");

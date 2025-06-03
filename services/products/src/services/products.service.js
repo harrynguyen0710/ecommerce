@@ -15,7 +15,6 @@ const { getInventoryBySkus } = require("../../clients/inventory.client");
 
 const logMetrics = require("../utils/logMetrics");
 
-
 class ProductService {
   constructor() {
     this.Product = Product;
@@ -94,29 +93,18 @@ class ProductService {
     }
   }
 
-  async insertManyProducts(products, chunkSize = 12000) {
-
+  async insertManyProducts(products, chunkSize = 9250) {
     const chunks = chunkArray(products, chunkSize);
     let totalInserted = 0;
 
-
     for (const [chunkIndex, chunk] of chunks.entries()) {
       try {
-        
         console.time("totalTime::");
 
-        const outboxEvents = chunk.map((product) => ({
-          eventType: "product.created",
-          payload: {
-            productId: product.productId,
-            variants: product.variants,
-          }
-        }))
-       
-        const [inserted, events] = await Promise.all([
-          Product.insertMany(chunk, { ordered: false }),
-          OutboxEvent.insertMany(outboxEvents, { ordered: false }),
-        ]);
+        const inserted = await Product.collection.insertMany(chunk, {
+          ordered: false,
+          rawResult: false,
+        });
 
         console.timeEnd("totalTime::");
 
@@ -133,7 +121,6 @@ class ProductService {
     }
 
     return totalInserted;
-    
   }
 
   async getAll({ filters, sort, skip, limit }) {
