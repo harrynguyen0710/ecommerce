@@ -136,17 +136,20 @@ services:
   product-bulk-consumer:
     build:
       context: ./services/products
-    container_name: product-bulk-consumer
     command: node src/kafka/index.js
     depends_on:
       kafka:
         condition: service_healthy
       mongo:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - ./services/products/.env
     networks:
       - ecommerce
+    deploy:
+      replicas: 5
 
   inventory-service:
     build: ./services/inventories
