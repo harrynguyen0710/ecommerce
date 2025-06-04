@@ -93,7 +93,7 @@ class ProductService {
     }
   }
 
-  async insertManyProducts(products, chunkSize = 9250) {
+  async insertManyProducts(products, chunkSize = 10000) {
     const chunks = chunkArray(products, chunkSize);
     let totalInserted = 0;
 

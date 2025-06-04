@@ -1,15 +1,13 @@
 const chunkArray = require("../../utils/csv/chunkArray");
 const { getConnectedProducer } = require("../producerManager");
 
-const MAX_BATCH_SIZE = 18500; // messages;
+const MAX_BATCH_SIZE = 25000; // messages;
 
 
 const TOPICS = require("../topics");
 
 async function produceProductCreated(payload, headers = {}) {
   const producer = await getConnectedProducer();
-
-  // console.log("payload::", payload);
 
   const failed = [];
 

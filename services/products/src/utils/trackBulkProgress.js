@@ -1,57 +1,37 @@
 const redis = require("../configs/redis");
-const logMetrics = require("./logMetrics");
 
 async function trackBulkInsertProgress({
   correlationId,
   recordCount,
-  service = "product-service",
 }) {
   const doneKey = `bulk:${correlationId}:done`;
-  const expectedKey = `bulk:${correlationId}:expected`;
   const startKey = `bulk:${correlationId}:startTime`;
-
-  await redis.incrby(doneKey, recordCount);
-
-  const [doneStr, expectedStr] = await redis.mget(doneKey, expectedKey);
-
-  if (doneStr === null || expectedStr === null) {
-    throw new Error(
-      `❌ Redis keys missing. done=${doneStr}, expected=${expectedStr}`
-    );
-  }
 
   if (!Number.isInteger(recordCount)) {
     throw new Error(`❌ Invalid recordCount passed to Redis: ${recordCount}`);
   }
 
-  const done = parseInt(doneStr, 10);
-  const expected = parseInt(expectedStr, 10);
+  // Increment the "done" count
+  await redis.incrby(doneKey, recordCount);
 
-  if (done === expected) {
-    const startStr = await redis.get(startKey);
-    console.log(`📦 startStr from Redis:`, startStr);
+  const [doneStr, startStr] = await redis.mget(doneKey, startKey);
 
-    if (startStr === null) throw new Error("❌ startTime missing in Redis");
-
-    const start = parseInt(startStr, 10);
-
-    const latencyMs = Date.now() - start;
-
-    await logMetrics({
-      service,
-      event: "bulk.completed",
-      correlationId,
-      recordCount: done,
-      startTimestamp: start, 
-    });
-
-
-    await redis.del(doneKey, expectedKey, startKey);
-
-    console.log(
-      `✅ Bulk insert completed for correlationId ${correlationId} in ${latencyMs}ms`
+  if (doneStr === null || startStr === null) {
+    throw new Error(
+      `❌ Redis keys missing. done=${doneStr}, start=${startStr}`
     );
   }
+
+  const done = parseInt(doneStr, 10);
+  const startTime = parseInt(startStr, 10);
+  const now = Date.now();
+
+
+  const latencyMs = now - startTime;
+  console.log(
+    `✅ Bulk insert completed for correlationId ${correlationId} in ${latencyMs}ms and ${done}`
+  );
+
 }
 
 module.exports = trackBulkInsertProgress;

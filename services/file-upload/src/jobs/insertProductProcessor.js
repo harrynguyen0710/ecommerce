@@ -5,9 +5,16 @@ const { processFileJob } = require("../services/jobHandler");
 const { QUEUE_NAMES } = require("../constants/index");
 
 
+const {
+  setBulkStartTime,
+} = require("../utils/bulkTracking");
+
 const worker = new Worker(
   QUEUE_NAMES.FILE_UPLOAD,
-  async (job) => await processFileJob(job),
+  async (job) => {
+    await setBulkStartTime(job.data.correlationId, job.data.startTimestamp);
+    await processFileJob(job);
+  },
   { connection: redis }
 );
 

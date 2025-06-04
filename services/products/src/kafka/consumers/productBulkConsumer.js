@@ -76,7 +76,7 @@ async function bulkInsertProductConsumer() {
 
         await commitOffsetsIfNecessary();
       } catch (error) {
-        console.error("Error happens when insert many products");
+        console.error("Error happens when insert many products::", error);
       }
     },
   });
