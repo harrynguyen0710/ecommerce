@@ -1,4 +1,3 @@
-const { parseCSV } = require("./csvProcessor");
 const transformRow = require("../utils/csv/transformRow");
 
 const logMessagesTracing = require("../utils/tracing/messageProcessTracing");
