@@ -34,6 +34,7 @@ async function bulkInsertProductConsumer() {
 
         for (const message of batch.messages) {
           const payload = JSON.parse(message.value.toString());
+          console.log("messages::", payload);
 
           if (!isRunning() || isStale()) {
             break;

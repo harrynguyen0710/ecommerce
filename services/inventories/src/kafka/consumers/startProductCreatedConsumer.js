@@ -26,14 +26,10 @@ async function startProductCreatedConsumer() {
 
       const meta = parseKafkaHeaders(message.headers);
 
-      console.log('meta::', meta)
-
       const productId = payload.productId;
 
       try {
-        console.log('comming to retry:: 1');
         await retryWithBackoff(() => routeMessage(topic, payload, meta), {
-          
           retries: 5,
           delay: 1000,
           onRetry: (err, attempt) =>
@@ -42,7 +38,6 @@ async function startProductCreatedConsumer() {
             ),
         });
       } catch (finalError) {
-        console.log('comming to dql');
         await sendToDlq(
           topics.DLQ_PRODUCT_CREATED,
           {
