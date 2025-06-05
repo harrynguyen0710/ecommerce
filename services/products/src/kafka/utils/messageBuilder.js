@@ -21,8 +21,6 @@ function groupByTopic(events, sourceService) {
     for (const event of events) {
         const topic = event.eventType;
 
-        console.log('topic::', event.eventType);
-
         const message = {
             key: event.payload.productId,
             value: JSON.stringify(event.payload),
