@@ -4,7 +4,7 @@ const {
   markManyAsSent,
 } = require("../../repositories/outbox.repository");
 
-const sendBatchEvents = require("./sendBatchEvents");
+const { sendBatchEvents } = require("./sendBatchEvents");
 
 const fallbackRetryEvents = require("../events/fallbackRetryEvents")
 

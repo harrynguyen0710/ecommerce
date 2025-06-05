@@ -2,13 +2,7 @@ const consumer = require("../consumer");
 const waitForKafkaWithRetry = require("../utils/kafkaRetry");
 const productService = require("../../services/products.service");
 
-const { KAFKA_HEADERS } = require("../../constants/index");
-
 const { PRODUCT_BULK_CREATED } = require("../topics");
-
-const sendToDLQ = require("../producers/sendToDLQ");
-
-const MAX_RETRIES = 5;
 
 const trackBulkInsertProgress = require("../../utils/trackBulkProgress");
 

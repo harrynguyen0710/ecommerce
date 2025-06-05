@@ -15,6 +15,15 @@ const { getInventoryBySkus } = require("../../clients/inventory.client");
 
 const logMetrics = require("../utils/logMetrics");
 
+// constants
+const { SERVICE_INFO } = require("../constants/index");
+
+// kafka topics
+const topics = require("../kafka/topics");
+
+// events
+const { sendBatchMessages } = require("../kafka/events/sendBatchEvents");
+
 class ProductService {
   constructor() {
     this.Product = Product;
@@ -78,8 +87,6 @@ class ProductService {
 
       console.log(`[${correlationId}] ✅ Product saved & outbox event created`);
 
-      // logg
-
       return product;
     } catch (error) {
       await session.abortTransaction();
@@ -96,6 +103,13 @@ class ProductService {
   async insertManyProducts(products, chunkSize = 10000) {
     const chunks = chunkArray(products, chunkSize);
     let totalInserted = 0;
+
+    const productVariants = products.map((product) => ({
+      productId: product.productId,
+      variants: product.variants,
+    }));
+
+    await sendBatchMessages(productVariants, topics.INVENTORY_BULK_CREATED);
 
     for (const [chunkIndex, chunk] of chunks.entries()) {
       try {
