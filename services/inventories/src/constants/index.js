@@ -16,6 +16,7 @@ const KAFKA_HEADERS = {
 
 const GROUP_CONSUMERS = {
     INVENTORY_GROUP: "inventory-group",
+    INVENTORY_BULK_CONSUMER_GROUP: "inventory-bulk-consumer",
 };
 
 const LIMIT = {

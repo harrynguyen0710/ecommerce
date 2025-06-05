@@ -10,7 +10,6 @@ services:
     networks:
       - ecommerce
 
-
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: kafka
@@ -25,7 +24,14 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     healthcheck:
-      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      test:
+        [
+          "CMD",
+          "kafka-topics",
+          "--bootstrap-server",
+          "localhost:9092",
+          "--list",
+        ]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -93,7 +99,6 @@ services:
     networks:
       - ecommerce
 
-
   product-service:
     build: ./services/products
     container_name: product-service
@@ -120,7 +125,7 @@ services:
       context: ./services/products
     container_name: product-outbox-worker
     command: ["node", "src/jobs/runOutboxWorker.js"]
-    depends_on: 
+    depends_on:
       mongo:
         condition: service_healthy
       kafka:
@@ -165,7 +170,24 @@ services:
       redis:
         condition: service_healthy
     env_file:
-      - ./services/inventories/.env 
+      - ./services/inventories/.env
+    volumes:
+      - ./services/inventories:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
+  inventory-bulk-consumer:
+    build: ./services/inventories
+    container_name: inventory-bulk-consumer
+    command: node src/kafka/startInventoryBulkConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./services/inventories/.env
     volumes:
       - ./services/inventories:/app
       - /app/node_modules
@@ -207,8 +229,8 @@ services:
       - ./services/discounts:/app
       - /app/node_modules
     networks:
-      - ecommerce 
-  
+      - ecommerce
+
   file-upload-service:
     build: ./services/file-upload
     container_name: file-upload-service
@@ -220,8 +242,8 @@ services:
     depends_on:
       - redis
     env_file:
-      - ./services/file-upload/.env 
-    networks: 
+      - ./services/file-upload/.env
+    networks:
       - ecommerce
 
   file-worker:
@@ -235,11 +257,11 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/file-upload/.env    
+      - ./services/file-upload/.env
     volumes:
       - ./services/file-upload/uploads:/app/uploads
     networks:
-      - ecommerce 
+      - ecommerce
 
   logging-service:
     build:
@@ -249,12 +271,11 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/logging/.env 
+      - ./services/logging/.env
     ports:
       - "5005:5005"
     networks:
       - ecommerce
-
 
 volumes:
   mongo_data:
@@ -262,7 +283,5 @@ volumes:
 
 networks:
   ecommerce:
-    name: ecommerce 
+    name: ecommerce
     driver: bridge
-
-

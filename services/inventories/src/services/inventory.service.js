@@ -124,6 +124,16 @@ class InventoryService {
     return skus;
   }
 
+  async insertBulkInventory(payload) {
+    const result = await prisma.inventory.createMany({
+      data: payload,
+      skipDuplicates: true,
+    });
+
+    return result;
+
+  }
+
   async deleteAllInventory() {
     const result = await prisma.inventory.deleteMany({});
     return { deletedInventory: result.count };
