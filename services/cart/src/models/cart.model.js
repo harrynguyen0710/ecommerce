@@ -53,10 +53,6 @@ const CartSchema = new Schema({
         type: [CartItemSchema], 
         default: [],
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
 }, {
     timestamps: true,
 });
