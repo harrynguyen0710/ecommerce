@@ -277,6 +277,28 @@ services:
     networks:
       - ecommerce
 
+  cart-service:
+    build:
+      context: ./services/cart
+    container_name: cart-service
+    command: node server.js
+    ports:
+      - "5006:5006"
+    depends-on:
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    env_files:
+      - ./services/cart/.env
+    volumes:
+      - ./services/cart:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
 volumes:
   mongo_data:
   pgdata:
