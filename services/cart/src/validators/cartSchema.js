@@ -16,4 +16,14 @@ const cartSchema = Joi.object({
   items: Joi.array().items(cartItemSchema).min(1).required()
 });
 
-module.exports = { cartSchema };
+
+const addToCartSchema = cartItemSchema; 
+
+const updateQuantitySchema = Joi.object({
+  quantity: Joi.number().integer().min(1).required(),
+});
+
+module.exports = {
+  addToCartSchema,
+  updateQuantitySchema,
+};
