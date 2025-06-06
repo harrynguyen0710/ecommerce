@@ -8,7 +8,8 @@ const {
   getCartByUserId,
   updateCartByUserId,
   deleteCartByUserId,
-} = require("../repositories/cartRepository");
+  createCartById,
+} = require("../repositories/cart.repository");
 
 async function getCart(userId) {
   const cached = await getCartFromRedis(userId);
@@ -23,10 +24,14 @@ async function getCart(userId) {
   return cart;
 }
 
-async function saveAndCacheCart(userId, cartData) {
-  const updated = await updateCartByUserId(userId, cartData);
+async function saveAndCacheCart(userId, cartData, updatedAtDate) {
+  const result = await updateCartByUserId(userId, cartData, updatedAtDate);
+
+  if (result.modifiedCount === 0) throw new Error("Cart was modified by another request. Retry required.");
+
   await setCartInRedis(userId, updated);
   return updated;
+  
 }
 
 async function deleteCart(userId) {
@@ -34,8 +39,15 @@ async function deleteCart(userId) {
   await deleteCartFromRedis(userId);
 }
 
+async function createCart(userId, cartData, ttl = CART_TTL_SECONDS) {
+  await setCartInRedis(userId, cartData, ttl); 
+  const cart = await createCartById(userId, cartData);
+  return cart;
+}
+
 module.exports = {
   getCart,
   saveAndCacheCart,
   deleteCart,
+  createCart, 
 };
