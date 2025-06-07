@@ -284,18 +284,19 @@ services:
     command: node server.js
     ports:
       - "5006:5006"
-    depends-on:
+    depends_on:
       redis:
         condition: service_healthy
       mongo:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    env_files:
+    env_file:
       - ./services/cart/.env
     volumes:
       - ./services/cart:/app
       - /app/node_modules
+
     networks:
       - ecommerce
 
