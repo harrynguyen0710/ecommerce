@@ -300,6 +300,28 @@ services:
     networks:
       - ecommerce
 
+  order-service:
+    build:
+      context: ./services/orders
+    container_name: order-service
+    command: npx nodemon server.js
+    ports:
+      - "5007:5007"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./services/orders/.env
+    volumes:
+      - ./services/orders:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+  
+
+
 volumes:
   mongo_data:
   pgdata:

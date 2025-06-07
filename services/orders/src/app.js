@@ -1,24 +1,16 @@
 const express = require("express");
-const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 
-const cartRoutes = require("./routes/cart.route");
+// const orderRoutes = require("./routes/order.route");
 const app = express();
 
-const connectMongo = require("./configs/mongo");
-const connectRedis = require("./configs/cartRedis/redisConnector");
 
-await connectMongo();
-await connectRedis();
-
-
-app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("v1/api/cart", cartRoutes);
+// app.use("v1/api/order", orderRoutes);
 
 // error catching handler
 app.use((req, res, next) => {
