@@ -5,7 +5,6 @@ const {
 } = require("../data/cartDataAccess");
 
 const { getInventoryBySKUs } = require("../../clients/inventory.client");
-const { getCart, saveAndCacheCart } = require("../data/cartDataAccess");
 
 class CartService {
   async addToCart(userId, newItem) {
