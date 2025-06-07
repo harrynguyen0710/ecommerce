@@ -50,7 +50,6 @@ class InventoryController {
   async bulkUpdateInventoryBySkus(req, res) {
     try {
       const updates = req.body;
-
       if (!Array.isArray(updates) || updates.length === 0) {
         return res
           .status(400)

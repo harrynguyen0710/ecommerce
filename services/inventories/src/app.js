@@ -3,6 +3,8 @@ const app = express();
 
 const { connectPrisma } = require('./config/prisma');
 
+app.use(express.json());
+
 
 connectPrisma(); 
 
