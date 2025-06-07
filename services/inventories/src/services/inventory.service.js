@@ -3,7 +3,7 @@ const { prisma } = require("../config/prisma");
 class InventoryService {
   async getInventoryBySkus(
     skus,
-    fields = ["sku", "quantity", "reserved", "status"]
+    fields = ["sku", "quantity", "reserved", "status", "updatedAt"]
   ) {
     try {
       if (!Array.isArray(skus) || skus.length === 0) {
