@@ -12,7 +12,7 @@ function authMiddleware(req, res, next) {
 
     try {
         const payload = jwt.verify(token, process.env.PRIVATE_KEY);
-        req.userId = payload;
+        req.user.id = payload;
         
         next();
         

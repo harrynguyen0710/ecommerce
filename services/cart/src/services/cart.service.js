@@ -7,6 +7,12 @@ const {
 const { getInventoryBySKUs } = require("../../clients/inventory.client");
 
 class CartService {
+  async getCartUser(userId) {
+    const cart = await getCart(userId);
+
+    return cart;
+  }
+
   async addToCart(userId, newItem) {
     if (newItem.quantity <= 0) {
       throw new Error("Quantity must be greater than 0");

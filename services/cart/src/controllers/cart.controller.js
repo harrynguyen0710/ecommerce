@@ -1,6 +1,22 @@
 const CartService = require("../services/cart.service");
 
 class CartController {
+  async getCart(req, res) {
+    try {
+      const userId = req.user.id;
+      
+      const result = await CartService.getCartUser(userId);
+      
+      if (!result) return res.status(404).json({ message: "Not found!" });
+      
+      return res.status(200).json(result);
+
+    } catch (error) {
+      console.error("❌ getCart:", error.message);
+      return res.status(400).json({ message: error.message });
+    }
+  }  
+
   async addToCart(req, res) {
     try {
       const userId = req.user.id;
