@@ -3,7 +3,7 @@ const CartService = require("../services/cart.service");
 class CartController {
   async getCart(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       
       const result = await CartService.getCartUser(userId);
       
@@ -19,7 +19,7 @@ class CartController {
 
   async addToCart(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const newItem = req.body;
 
       const result = await CartService.addToCart(userId, newItem);
@@ -32,7 +32,7 @@ class CartController {
 
   async updateItemQuantity(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const { sku } = req.params;
       const { quantity } = req.body;
 
@@ -46,7 +46,7 @@ class CartController {
 
   async removeItemFromCart(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
       const { sku } = req.params;
 
       const result = await CartService.removeItemFromCart(userId, sku);
@@ -59,7 +59,7 @@ class CartController {
 
   async cleanCart(req, res) {
     try {
-      const userId = req.user.id;
+      const userId = req.userId;
 
       const result = await CartService.cleanCart(userId);
       return res.status(200).json(result);

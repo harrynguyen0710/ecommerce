@@ -28,13 +28,7 @@ class InventoryService {
         throw new Error("No inventory found for the provided SKUs");
       }
 
-      const results = {};
-
-      for (const r of records) {
-        results[r.sku] = { ...r };
-      }
-
-      return results;
+      return records;
     } catch (error) {
       console.error("Error fetching inventory:", error);
       throw new Error("Failed to fetch inventory");
@@ -131,7 +125,6 @@ class InventoryService {
     });
 
     return result;
-
   }
 
   async deleteAllInventory() {
