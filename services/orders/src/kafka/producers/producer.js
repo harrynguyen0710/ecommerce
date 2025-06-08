@@ -1,11 +1,13 @@
 const kafka = require("../../configs/kafka");
 
-let connectedProducer;
+const retry = require("../kafkaRetryConfig")
+
+let connectedProducer = null;
 
 
 async function getProducer() {
     if (!connectedProducer) {
-        connectedProducer = kafka.producer();
+        connectedProducer = kafka.producer({ retry });
         await connectedProducer.connect();
         
         console.log('Kafka producer connected (order-service)');
@@ -14,4 +16,4 @@ async function getProducer() {
     return connectedProducer;
 }
 
-module.exports = getProducer();
+module.exports = getProducer;
