@@ -213,6 +213,51 @@ services:
     networks:
       - ecommerce
 
+  inventory-reserve-consumer:
+    build: ./services/inventories
+    container_name: inventory-reserve-consumer
+    command: node src/server/startReserveInventoryConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/inventories/.env
+    volumes:
+      - ./services/inventories:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
+  inventory-order-created-consumer:
+    build: ./services/inventories
+    container_name: inventory-order-created-consumer
+    command: node src/server/startOrderCreatedConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/inventories/.env
+    volumes:
+      - ./services/inventories:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
+  inventory-order-cancelled-consumer:
+    build: ./services/inventories
+    container_name: inventory-order-cancelled-consumer
+    command: node src/server/startOrderCancelledConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/inventories/.env
+    volumes:
+      - ./services/inventories:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
   discount-service:
     build: ./services/discounts
     container_name: discount-service
