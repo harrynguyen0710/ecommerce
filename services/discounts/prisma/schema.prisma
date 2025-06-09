@@ -19,6 +19,7 @@ model Discount {
   id              String        @id @default(uuid())
   code            String        @unique
   type            DiscountType
+  scope           DiscountScope @default(ENTIRE_ORDER)
   value           Float
   minOrderValue   Float?
   startDate       DateTime
@@ -54,6 +55,10 @@ model DiscountUsage {
   @@unique([discountId, userId])
 }
 
+enum DiscountScope {
+  ENTIRE_ORDER
+  SPECIFIC_SKUS
+}
 
 enum DiscountType {
   PERCENTAGE
