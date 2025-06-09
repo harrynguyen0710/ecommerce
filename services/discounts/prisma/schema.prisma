@@ -55,9 +55,25 @@ model DiscountUsage {
   @@unique([discountId, userId])
 }
 
+model DiscountUsageLog {
+  id          String    @id @default(uuid())
+  orderId     String 
+  userId      String
+  code        String
+  type        UsageLogType
+  createdAt   DateTime  @default(now())
+
+  @@unique([orderId, code, type])
+}
+
 enum DiscountScope {
   ENTIRE_ORDER
   SPECIFIC_SKUS
+}
+
+enum UsageLogType {
+  APPLIED
+  ROLLED_BACK
 }
 
 enum DiscountType {

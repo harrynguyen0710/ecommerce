@@ -231,6 +231,21 @@ services:
     networks:
       - ecommerce
 
+  discount_consumer:
+    build:
+      context: ./services/discounts
+    container_name: discount_consumer
+    command: node startConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./services/discounts/.env
+    networks:
+      - ecommerce
+
   file-upload-service:
     build: ./services/file-upload
     container_name: file-upload-service
