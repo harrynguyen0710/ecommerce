@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 
-require('dotenv').config();
+const { getConnectedProducer } = require("../kafka/producerManager");
 
-const { connectProducer } = require('../kafka/producer');
-const { processOutboxEvents } = require('./processOutboxEvents');
+const { processOutboxEvents } = require('../kafka/events/processOutboxEvents');
 
 async function main() {
     console.log('Starting outbox worker...');
@@ -11,7 +10,7 @@ async function main() {
     await mongoose.connect(process.env.MONGO_URI);
 
     // connect to producer
-    await connectProducer();
+    await getConnectedProducer();
 
     setInterval(async () => {
         await processOutboxEvents();

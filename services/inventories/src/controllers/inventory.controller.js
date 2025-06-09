@@ -10,7 +10,7 @@ class InventoryController {
       }
 
       const result = await inventoryService.getInventoryBySkus(skus);
-      console.log("Result:", result);
+
       if (!result || result.length === 0) {
         return res
           .status(404)
@@ -50,7 +50,6 @@ class InventoryController {
   async bulkUpdateInventoryBySkus(req, res) {
     try {
       const updates = req.body;
-
       if (!Array.isArray(updates) || updates.length === 0) {
         return res
           .status(400)
@@ -72,6 +71,35 @@ class InventoryController {
       });
     }
   }
+
+  async getSkus (req, res) {
+    try {
+      const rawIds = req.query.productIds;
+
+      if (!rawIds) {
+        return res.status(400).json({ error: "Missing SKUs query parameter" });
+      }
+
+      const skus = await inventoryService.getSkusByProductIds(rawIds);
+
+      return res.json({ skus }); 
+
+    } catch (error) {
+      console.error("Error fetching SKUs:", error);
+      res.status(500).json({ error: "Failed to fetch SKUs", details: error.message });
+    }
+  }
+
+  async handleDeleteAllInventory(req, res) {
+  try {
+    const result = await inventoryService.deleteAllInventory();
+    res.status(200).json({ message: "All inventory records deleted", ...result });
+  } catch (err) {
+    console.error("Inventory deletion error:", err.message);
+    res.status(500).json({ error: "Failed to delete inventory" });
+  }
+}
+
 }
 
 module.exports = new InventoryController();

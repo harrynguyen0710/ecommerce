@@ -1,23 +1,17 @@
-require('dotenv').config()
-
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
-
-const { startConsumer } = require('./kafka/consumer');
-const { connectDlqProducer } = require('./kafka/dlqProducer');
 
 const { connectPrisma } = require('./config/prisma');
 
+app.use(express.json());
+
+
 connectPrisma(); 
 
-async function startApp() {
-  await connectDlqProducer();
-  await startConsumer();
-}
-
-app.use(express.json());
-// app.use(bodyParser.json());
+app.use((req, res, next) => {
+  console.log(`🛰️ Incoming request: ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 // routes
 app.use('/v1/api', require('./routes/inventory.route'));
@@ -37,9 +31,5 @@ app.use((error, req, res, next) => {
         message: error.message || 'Internal Server Error',
     });
 });
-
-
-startApp();
-
 
 module.exports = app;
