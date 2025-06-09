@@ -1,5 +1,11 @@
 const { prisma } = require("../config/prisma");
 
+const {
+  reserveInventory,
+  confirmBuy,
+  revertReserve,
+} = require("../repositories/inventory.internal.repository");
+
 class InventoryService {
   async getInventoryBySkus(
     skus,
@@ -125,6 +131,45 @@ class InventoryService {
     });
 
     return result;
+  }
+
+  async reserveItems(items) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        for (const item of items) {
+          await reserveInventory(tx, item);
+        }
+        return { success: true };
+      });
+    } catch (error) {
+      return { success: false, reason: error.message };
+    }
+  }
+
+  async confirmOrder(items) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        for (const item of items) {
+          await confirmBuy(tx, item);
+        }
+        return { success: true };
+      });
+    } catch (error) {
+      return { success: false, reason: error.message };
+    }
+  }
+
+  async revertReserve(items) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        for (const item of items) {
+          await revertReserve(tx, items);
+        }
+        return { success: true };
+      })
+    } catch (error) {
+      return { success: false, reason: error.message }; 
+    }
   }
 
   async deleteAllInventory() {

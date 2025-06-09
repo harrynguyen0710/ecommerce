@@ -1,30 +1,18 @@
-const { prisma } = require("../config/prisma");
 
-async function createManyInventories(inventoryEntries) {
-  await prisma.inventory.createMany({
-    data: inventoryEntries,
-    skipDuplicates: true,
-  });
+async function getInventoryBySku(tx, sku) {
+  return tx.inventory.findUnique({ where: { sku } });
 }
 
-async function getInventoryBySku(sku) {
-  const inventory = await prisma.inventory.findUnique({
-    where: sku,
-  });
-
-  return inventory;
-}
-
-async function revertReserve(item) {
+async function revertReserve(tx, item) {
   const sku = item.sku;
   const quantity = Number(item.quantity);
 
-  const inventory = await getInventoryBySku(sku);
+  const inventory = await getInventoryBySku(tx, sku);
   if (!inventory) {
     throw new Error(`No inventory found for SKU: ${sku}`);
   }
 
-  await prisma.inventory.update({
+  await tx.inventory.update({
     where: { sku },
     data: {
       quantity: { increment: quantity },
@@ -33,16 +21,16 @@ async function revertReserve(item) {
   });
 }
 
-async function confirmBuy(item) {
+async function confirmBuy(tx, item) {
   const sku = item.sku;
   const quantity = Number(item.quantity);
 
-  const inventory = await getInventoryBySku(sku);
+  const inventory = await getInventoryBySku(tx, sku);
   if (!inventory || inventory.reserved < quantity) {
     throw new Error(`Not enough reserved stock for SKU: ${sku}`);
   }
 
-  await prisma.inventory.update({
+  await tx.inventory.update({
     where: { sku },
     data: {
       reserved: { decrement: quantity },
@@ -50,16 +38,16 @@ async function confirmBuy(item) {
   });
 }
 
-async function reserveInventory(item) {
+async function reserveInventory(tx, item) {
   const sku = item.sku;
   const quantity = Number(item.quantity);
 
-  const inventory = await getInventoryBySku(sku);
+  const inventory = await getInventoryBySku(tx, sku);
   if (!inventory || inventory.quantity < quantity) {
     throw new Error(`Not enough stock for SKU: ${sku}`);
   }
 
-  await prisma.inventory.update({
+  await tx.inventory.update({
     where: { sku },
     data: {
       quantity: { decrement: quantity },
@@ -69,6 +57,7 @@ async function reserveInventory(item) {
 }
 
 module.exports = {
-  createManyInventories,
-  getInventoryBySku,
+  reserveInventory,
+  confirmBuy,
+  revertReserve,
 };
