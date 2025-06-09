@@ -17,19 +17,6 @@ const discountSchema = Joi.object({
   applicableProductIds: Joi.array().items(Joi.string()).optional(),
 });
 
-const validateDiscount = (req, res, next) => {
-  const { error } = discountSchema.validate(req.body, { abortEarly: false });
-
-  if (error) {
-    return res.status(400).json({
-      errors: error.details.map((err) => ({
-        field: err.path.join("."),
-        message: err.message,
-      })),
-    });
-  }
-
-  next();
-};
-
-module.exports = validateDiscount;
+module.exports = {
+    discountSchema,
+}

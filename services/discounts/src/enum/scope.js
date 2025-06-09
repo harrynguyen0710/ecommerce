@@ -1,0 +1,4 @@
+module.exports = {
+  ENTIRE_ORDER: "ENTIRE_ORDER",
+  SPECIFIC_SKUS: "SPECIFIC_SKUS",
+};

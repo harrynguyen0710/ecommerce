@@ -4,3 +4,8 @@ package-lock.json
 *.log
 
 **/coverage/
+
+
+
+**/generated/
+**/.prisma/

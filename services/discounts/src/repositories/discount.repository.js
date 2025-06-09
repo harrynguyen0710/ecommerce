@@ -68,8 +68,6 @@ const findAll = async () => {
     },
   });
 
-  console.log("Fetching all discounts 3::", discounts.length);
-
   return discounts;
 };
 
@@ -120,7 +118,7 @@ const updateApplicableSkus = async (code, { add = [], remove = []}) => {
   });
 
   if (!discount) {
-    throw new Error("Discount not found 5");
+    throw new Error("Discount not found");
   }
 
   const tx = [];
@@ -160,6 +158,20 @@ const updateApplicableSkus = async (code, { add = [], remove = []}) => {
 
 }
 
+const getDiscountWithUsage = async (code, userId) => {
+  const discount = await prisma.discount.findUnique({
+    where: { code },
+    include: {
+      usages: {
+        where: { userId },
+        take: 1,
+      },
+    },
+  });
+
+  return discount;
+}
+
 
 module.exports = {
   createDiscount,
@@ -167,4 +179,5 @@ module.exports = {
   findAll,
   updateInfoByCode,
   updateApplicableSkus,
+  getDiscountWithUsage,
 };

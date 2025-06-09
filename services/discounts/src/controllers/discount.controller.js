@@ -20,7 +20,7 @@ class DiscountController {
       const discounts = await discountService.getAllDiscounts();
       res.json(discounts);
     } catch (error) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: error.message });
     }
   }
 
@@ -30,7 +30,7 @@ class DiscountController {
       const discount = await discountService.getDiscountByCode(code);
 
       if (!discount) {
-        return res.status(404).json({ error: "Discount not found 1" });
+        return res.status(404).json({ error: "Discount not found" });
       }
 
       res.json(discount);
@@ -47,7 +47,7 @@ class DiscountController {
       const updatedDiscount = await discountService.updateDiscountByCode(code, payload);
 
       if (!updatedDiscount) {
-        return res.status(404).json({ error: "Discount not found 2" });
+        return res.status(404).json({ error: "Discount not found" });
       }
 
       res.json(updatedDiscount);
@@ -64,7 +64,7 @@ class DiscountController {
       const updatedDiscount = await discountService.updateApplicableSkus(code, { add, remove });
 
       if (!updatedDiscount) {
-        return res.status(404).json({ error: "Discount not found 3" });
+        return res.status(404).json({ error: "Discount not found" });
       }
 
       res.json(updatedDiscount);
@@ -72,6 +72,21 @@ class DiscountController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  async previewDiscount(req, res) {
+    try {
+      const userId = req.userId;
+      
+      const result = await discountService.validateAndApplyDiscount({userId, ...req.body});
+
+      return res.status(200).json(result);
+
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+
+    }
+  }
+
 }
 
 module.exports = new DiscountController();
