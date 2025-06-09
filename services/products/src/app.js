@@ -7,12 +7,17 @@ const requestTimer = require('./middlewares/requestTimer');
 
 const bodyParser = require('body-parser');
 
+const attachCorrelation = require('./middlewares/attachCorrelation');
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 // request timer for measure metrics
 app.use(requestTimer); 
 
+// attach correlation id
+app.use(attachCorrelation);
 
 // database connections
 const connectMongo = require('../src/databases/mongo');

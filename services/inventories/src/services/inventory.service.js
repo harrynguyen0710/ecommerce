@@ -3,7 +3,7 @@ const { prisma } = require("../config/prisma");
 class InventoryService {
   async getInventoryBySkus(
     skus,
-    fields = ["sku", "quantity", "reserved", "status"]
+    fields = ["sku", "quantity", "reserved", "status", "updatedAt"]
   ) {
     try {
       if (!Array.isArray(skus) || skus.length === 0) {
@@ -28,13 +28,7 @@ class InventoryService {
         throw new Error("No inventory found for the provided SKUs");
       }
 
-      const results = {};
-
-      for (const r of records) {
-        results[r.sku] = { ...r };
-      }
-
-      return results;
+      return records;
     } catch (error) {
       console.error("Error fetching inventory:", error);
       throw new Error("Failed to fetch inventory");
@@ -104,6 +98,38 @@ class InventoryService {
     }
 
     return results;
+  }
+
+  async getSkusByProductIds(rawIds) {
+    const productIds = rawIds.split(",");
+
+    const skus = await prisma.inventory.findMany({
+      where: {
+        productId: {
+          in: productIds,
+        },
+      },
+      select: {
+        sku: true,
+        productId: true,
+      },
+    });
+
+    return skus;
+  }
+
+  async insertBulkInventory(payload) {
+    const result = await prisma.inventory.createMany({
+      data: payload,
+      skipDuplicates: true,
+    });
+
+    return result;
+  }
+
+  async deleteAllInventory() {
+    const result = await prisma.inventory.deleteMany({});
+    return { deletedInventory: result.count };
   }
 }
 
