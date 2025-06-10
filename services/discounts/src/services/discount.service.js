@@ -95,24 +95,24 @@ class DiscountService {
       const discount = await getDiscountWithUsage(code, userId);
 
       if (!discount || !discount.isActive) {
-        return {
+        throw new Error({
           success: false,
           message: `Voucher "${code}" is inactive or invalid.`,
-        };
+        });
       }
 
       if (discount.startDate > now || discount.endDate < now) {
-        return {
+        throw new Error({
           success: false,
           message: `Voucher "${code}" is not currently valid.`,
-        };
+        });
       }
 
       if (discount.maxUsage && discount.usageCount >= discount.maxUsage) {
-        return {
+        throw new Error({
           success: false,
           message: `Voucher "${code}" usage limit reached.`,
-        };
+        });
       }
 
       const usage = discount.usages[0];
@@ -121,20 +121,20 @@ class DiscountService {
         usage &&
         usage.usageCount >= discount.perUserLimit
       ) {
-        return {
+        throw new Error({
           success: false,
           message: `You've used voucher "${code}" too many times.`,
-        };
+        });
       }
 
       let eligibleAmount = 0;
 
       if (discount.scope === scope.ENTIRE_ORDER) {
         if (cartLevelVoucherApplied) {
-          return {
+          throw new Error({
             success: false,
             message: "Only one cart-wide voucher is allowed.",
-          };
+          });
         }
 
         cartLevelVoucherApplied = true;
@@ -158,20 +158,20 @@ class DiscountService {
         );
 
         if (eligibleAmount === 0) {
-          return {
+          throw new Error({
             success: false,
             message: `Voucher "${code}" does not apply to any items in your cart.`,
-          };
+          });
         }
 
         eligibleItems.forEach((item) => usedSkus.add(item.sku));
       }
 
       if (discount.minOrderValue && eligibleAmount < discount.minOrderValue) {
-        return {
+        throw new Error({
           success: false,
           message: `Voucher "${code}" requires a minimum of ${discount.minOrderValue}.`,
-        };
+        });
       }
 
       let discountAmount = 0;

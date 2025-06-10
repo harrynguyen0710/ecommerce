@@ -19,7 +19,7 @@ const createDiscount = async (payload, start, end) => {
 
   const isDuplicate = await prisma.discount.findFirst({
     where: {
-      code: code,
+      code,
     },
   });
 

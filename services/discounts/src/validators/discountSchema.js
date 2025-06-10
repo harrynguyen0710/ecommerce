@@ -2,7 +2,8 @@ const Joi = require("joi");
 
 const discountSchema = Joi.object({
   code: Joi.string().required(),
-  type: Joi.string().valid("PERCENTAGE", "FIXED").required(),
+  type: Joi.string().valid("PERCENTAGE", "FIXED", "SPECIFIC_SKUS").required(),
+  scope: Joi.string().valid("ENTIRE_ORDER", "SPECIFIC_SKUS").required(),
   value: Joi.number().positive().required().when("type", {
     is: "PERCENTAGE",
     then: Joi.number().max(100).message("Percentage discount cannot exceed 100%"),
