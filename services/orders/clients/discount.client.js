@@ -19,4 +19,23 @@ async function applyDiscountCode({ token, code, totalAmount }) {
   return res.data;
 }
 
-module.exports = applyDiscountCode;
+async function previewDiscount(token, payload) {
+  const url = `${DISCOUNT_BASE_URL}/discounts/preview`;
+  const res = await axios.post(url,
+    {
+      payload,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  );
+
+  return res.result;
+}
+
+module.exports = {
+  applyDiscountCode,
+  previewDiscount,
+};

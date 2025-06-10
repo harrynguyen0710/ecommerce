@@ -1,11 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
 
-const fetchUserCart = require("../../clients/cart.client");
+const {fetchUserCart} = require("../../clients/cart.client");
 
 const calculateTotal = require("../utils/calculateTotal");
 
 const { createOrder } = require("../repositories/order.repository");
-const applyDiscountCode = require("../../clients/discount.client");
+const {applyDiscountCode} = require("../../clients/discount.client");
 
 class OrderService {
     async createNewOrder({ userId, discountCode, token }) {
