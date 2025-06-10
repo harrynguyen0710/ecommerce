@@ -18,4 +18,7 @@ router.patch("/items/:sku", validateRequest(updateQuantitySchema), CartControlle
 router.delete("/items/:sku", CartController.removeItemFromCart);
 router.delete("/", CartController.cleanCart);
 
+router.post("/validate-and-lock", CartController.lockCart);
+router.post("/unlock", CartController.unlockCart);
+
 module.exports = router;
