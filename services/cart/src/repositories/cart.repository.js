@@ -31,9 +31,25 @@ async function createCartById(userId, items) {
   return created.toObject();
 }
 
+async function lockCart(userId) {
+  await Cart.updateOne(
+    { userId, locked: { $ne: true }},
+    { $set: { locked: true, lockedAt: new Date() } }
+  );
+}
+
+async function unlockCart(userId) {
+  await Cart.updateOne(
+    { userId }, 
+    { $set: { locked: false }, $unset: { lockedAt: ""} }
+  );
+}
+
 module.exports = {
   getCartByUserId,
   updateCartByUserId,
   deleteCartByUserId,
   createCartById,
+  lockCart,
+  unlockCart,
 };

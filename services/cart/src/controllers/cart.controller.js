@@ -68,6 +68,33 @@ class CartController {
       return res.status(400).json({ message: error.message });
     }
   }
+
+  async lockCart(req, res) {
+    try {
+      const userId = req.userId;
+
+      const cart = await CartService.validateAndLockCart(userId);
+
+      return res.status(200).json({ success: true, cart });
+
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+  }
+
+  async unlockCart(req, res) {
+    try {
+      const userId = req.userId;
+
+      await CartService.unlockCart(userId);
+
+      return res.status(204).json({ success: true, messsage: "Cart is unlocked" });
+
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+  }
+
 }
 
 module.exports = new CartController();

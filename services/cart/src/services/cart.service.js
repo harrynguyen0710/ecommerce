@@ -4,6 +4,12 @@ const {
   createCart,
 } = require("../data/cartDataAccess");
 
+const { getCartByUserId, lockCart, unlockCart, } = require("../repositories/cart.repository");
+
+const { acquireLock, releaseLock, } = require("../utils/redisLock");
+
+const { REDIS } = require("../constants/index");
+
 const { getInventoryBySKUs } = require("../../clients/inventory.client");
 
 class CartService {
@@ -139,6 +145,36 @@ class CartService {
 
     return await saveAndCacheCart(userId, updatedCart, cart.updatedAt);
   }
+
+  async validateAndLockCart(userId) {
+    const lockKey = `cart:lock:${userId}`;
+    const lockValue = Date.now().toString();
+
+    const locked = await acquireLock(lockKey, REDIS.LOCK_TTL, lockValue);
+
+    if (!locked) {
+      throw new Error("Cart is already locked");
+    }
+
+    const cart = await getCartByUserId(userId);
+
+    if (!cart || cart.items.length === 0) {
+      throw new Error("Cart is empty or doesn't exist");
+    }
+
+    await lockCart(userId);
+
+    return cart;
+  }
+
+  async unlockCart(userId) {
+    const redisKey = `cart:lock:${userId}`;
+
+    await unlockCart(userId);
+
+    await releaseLock(redisKey);
+  }
+
 }
 
 module.exports = new CartService();

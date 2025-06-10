@@ -356,7 +356,42 @@ services:
     volumes:
       - ./services/cart:/app
       - /app/node_modules
+    networks:
+      - ecommerce
 
+  cart-cleanup-consumer:
+    build: ./services/carts
+    container_name: cart-cleanup-consumer
+    command: node src/server/consumerCleanup.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/carts/.env
+    networks:
+      - ecommerce
+
+  cart-checkout-consumer:
+    build: ./services/carts
+    container_name: cart-checkout-consumer
+    command: node src/server/checkoutConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/carts/.env
+    networks:
+      - ecommerce
+
+  cart-unlock-consumer:
+    build: ./services/carts
+    container_name: cart-unlock-consumer
+    command: node src/server/orderCancelledConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/carts/.env
     networks:
       - ecommerce
 

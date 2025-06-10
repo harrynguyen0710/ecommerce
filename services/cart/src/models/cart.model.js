@@ -53,6 +53,13 @@ const CartSchema = new Schema({
         type: [CartItemSchema], 
         default: [],
     },
+    locked: {
+      type: Boolean,
+      default: false,
+    },
+    lockedAt: {
+      type: Date,
+    }
 }, {
     timestamps: true,
 });
