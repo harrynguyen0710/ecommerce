@@ -15,8 +15,11 @@ const { getInventoryBySKUs } = require("../../clients/inventory.client");
 class CartService {
   async getCartUser(userId) {
     const cart = await getCart(userId);
-
-    return cart;
+    const totalAmount = cart.items.reduce((acc, item) => acc + item.quantity * item.priceAtAdd, 0);
+    return {
+      cart,
+      totalAmount,
+    };
   }
 
   async addToCart(userId, newItem) {
