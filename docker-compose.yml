@@ -367,7 +367,7 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/carts/.env
+      - ./services/cart/.env
     networks:
       - ecommerce
 
@@ -379,7 +379,7 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/carts/.env
+      - ./services/cart/.env
     networks:
       - ecommerce
 
@@ -391,7 +391,7 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - ./services/carts/.env
+      - ./services/cart/.env
     networks:
       - ecommerce
 
