@@ -1,6 +1,6 @@
 const checkoutOrchestrator = require("../orchestrators/checkoutOrchestrator");
 
-class OrderController {
+class CheckoutController {
   async checkout(req, res) {
     const token = req.token;
     const userId = req.userId;
@@ -28,4 +28,4 @@ class OrderController {
   }
 }
 
-module.exports = new OrderController();
+module.exports = new CheckoutController();

@@ -2,13 +2,14 @@ const express = require("express");
 
 const router = express.Router();
 
-const orderController = require("../controllers/order.controller");
 
+const checkoutController = require("../controllers/checkout.controller");
 
 const authMiddleware = require("../middlewares/authMiddleware");
 
 router.use(authMiddleware);
 
+router.post("/checkout", checkoutController.checkout);
 
 
 

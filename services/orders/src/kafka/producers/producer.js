@@ -16,4 +16,4 @@ async function getProducer() {
     return connectedProducer;
 }
 
-module.exports = getProducer;
+module.exports = { getProducer, };
