@@ -6,37 +6,53 @@ const publishInventoryReservation = require("../kafka/producers/publishInventory
 const { v4: uuidv4 } = require("uuid");
 
 async function checkoutOrchestrator({ token, userId, appliedVouchers = [] }) {
-    const correlationId = uuidv4();
+  const correlationId = uuidv4();
 
-    const cart = await validateAndLock(token);
+  const cartResponse = await validateAndLock(token);
 
-    const discounts = await previewDiscount(token, {
-        appliedVouchers,
-        cartIems: cart.items,
-        totalAmount: cart.totalAmount,
-    });
+  if (!cartResponse.success) {
+    throw new Error("Something went wrong with cart service");
+  }
 
-    if (!discounts.data.success) {
-        throw new Error(`Discount validation failed: ${discounts.data.message}`);
-    }
+  const cart = cartResponse.cart;
 
-    const { discountAmount, finalAmount, validVouchers } = discounts.data;
+  const discounts = await previewDiscount(token, {
+    appliedVouchers,
+    cartIems: cart.items,
+    totalAmount: cart.totalAmount,
+  });
 
-    await publishInventoryReservation({
-        correlationId,
-        userId, 
-        items: cart.items,
-        meta: {
-            discountAmount,
-            finalAmount,
-            validVouchers,
-            originalTotal: cart.totalAmount,
-            appliedVouchers,
-        },
-    });
+  if (!discounts.success) {
+    throw new Error(`Discount validation failed: ${discounts.data.message}`);
+  }
 
-    return { success: true, message: "Inventory reservation requests", correlationId };
+  const { totalDiscount, finalTotal, applied } = discounts.data;
+
+  await publishInventoryReservation({
+    correlationId,
+    userId,
+    items: cart.items,
+    meta: {
+      discountAmount: totalDiscount,
+      finalAmount: finalTotal,
+      validVouchers: applied,
+      originalTotal: cart.totalAmount,
+      appliedVouchers,
+    },
+  });
+
+  return {
+    success: true,
+    message: "Checkout initiated successfully",
+    data: {
+      userId,
+      totalDiscount,
+      finalTotal,
+      appliedVoucher: applied,
+      correlationId,
+      cartItems: cart.items,
+    },
+  };
 }
-
 
 module.exports = checkoutOrchestrator;

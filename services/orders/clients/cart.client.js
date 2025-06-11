@@ -21,7 +21,7 @@ async function validateAndLock(token) {
         }
     });
 
-    return res.cart;
+    return res;
 }
 
 module.exports = {

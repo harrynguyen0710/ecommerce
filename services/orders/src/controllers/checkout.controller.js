@@ -14,11 +14,7 @@ class CheckoutController {
         appliedVouchers,
       });
 
-      return res.status(200).json({
-        success: true,
-        message: "Checkout initiated successfully",
-        correlationId: result.correlationId,
-      });
+      return res.status(200).json(result);
     } catch (error) {
       return res.status(500).json({
         success: false,

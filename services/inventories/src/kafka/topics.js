@@ -4,7 +4,7 @@ module.exports = {
     PRODUCT_CREATED: "product.created",
     INVENTORY_BULK_CREATED: "inventory.bulk.created",
     ORDER_INVENTORY_RESERVE: "order.inventory.reserve",
-    INVENTORY_RESERVED: "inventory.reserved",
+    INVENTORY_RESERVE_REQUEST: "inventory.reserve.request",
     INVENTORY_FAILED: "inventory.failed",
     ORDER_CREATED: "order.created",
     ORDER_CANCELLED: "order.cancelled",
