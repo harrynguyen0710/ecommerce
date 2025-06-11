@@ -166,9 +166,10 @@ const getDiscountWithUsage = async (code, userId) => {
         where: { userId },
         take: 1,
       },
+      applicableSkus: true,
+      
     },
   });
-
   return discount;
 }
 
