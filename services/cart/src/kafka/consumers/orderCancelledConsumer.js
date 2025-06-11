@@ -10,12 +10,12 @@ async function orderCancelledConsumer () {
     const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.CART });
 
     await consumer.connect();
-    await consumer.subscribe({ topic: topics.ORDER_CANCELLED, fromBeginning: false });
+    await consumer.subscribe({ topic: topics.CART_LOCKED, fromBeginning: false });
 
     await consumer.run({
         eachMessage: async ({ message }) => {
             const { userId } = JSON.parse(message.value.toString());
-
+            console.log("userId::", userId)
             try {
                 await cartSerive.unlockCart(userId);
                 console.log("Unlocked cart successfully");
