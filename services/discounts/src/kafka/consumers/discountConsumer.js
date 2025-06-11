@@ -14,7 +14,7 @@ async function startDiscountConsumer() {
     await consumer.connect();
 
     await consumer.subscribe({ topic: topics.DISCOUNT_APPLIED, fromBeginning: false });
-    await consumer.subscribe({ topic: topics.DISCOUNT_REJECT, fromBeginning: false });
+    await consumer.subscribe({ topic: topics.DISCOUNT_ROLLBACK, fromBeginning: false });
 
     await consumer.run({
         eachMessage: async ({ topic, message }) => {
