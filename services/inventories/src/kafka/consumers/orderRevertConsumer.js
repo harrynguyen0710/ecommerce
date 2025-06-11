@@ -9,17 +9,26 @@ const topics = require("../topics");
 const consumer = kafka.consumer({ groupId: GROUP_CONSUMERS.INVENTORY_GROUP });
 
 async function orderRevertConsumer() {
-    await consumer.connect();
-    await consumer.subscribe({ topic: topics.ORDER_CANCELLED, fromBeginning: false });
+  await consumer.connect();
+  await consumer.subscribe({
+    topic: topics.ORDER_FAILED,
+    fromBeginning: false,
+  });
 
-    await consumer.run({
-        eachMessage: async ({ message }) => {
-            const { orderId, items } = JSON.parse(message.value.toString());
-
-            await inventoryService.revertReserve(items);
-        }
-    })
-
+  await consumer.run({
+    eachMessage: async ({ message }) => {
+      const { cartItems } = JSON.parse(message.value.toString());
+      console.log("cart items::", cartItems);
+      try {
+        await inventoryService.revertReserve(cartItems);
+      } catch (error) {
+        console.log(
+          "Something went wrong during reverting inventories::",
+          error.message
+        );
+      }
+    },
+  });
 }
 
 module.exports = orderRevertConsumer;
