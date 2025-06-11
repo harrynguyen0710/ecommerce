@@ -10,7 +10,7 @@ async function orderCancelledConsumer () {
     const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.CART });
 
     await consumer.connect();
-    await consumer.subscribe({ topic: topics.CART_LOCKED, fromBeginning: false });
+    await consumer.subscribe({ topic: topics.CART_UNLOCK, fromBeginning: false });
 
     await consumer.run({
         eachMessage: async ({ message }) => {
