@@ -12,7 +12,7 @@ const consumer = kafka.consumer({ groupId: GROUP_CONSUMERS.INVENTORY_GROUP });
 
 async function reserveInventoryConsumer() {
     await consumer.connect();
-    await consumer.subscribe({ topic: topics.INVENTORY_RESERVED, fromBeginning: false });
+    await consumer.subscribe({ topic: topics.INVENTORY_RESERVE_REQUEST, fromBeginning: false });
 
     await consumer.run({
         eachMessage: async ({ message }) => {
@@ -22,7 +22,7 @@ async function reserveInventoryConsumer() {
             const result = await inventoryService.reserveItems(items);
             
             await emitInventoryStatus(
-                result.success ? topics.INVENTORY_RESERVED : topics.INVENTORY_FAILED,
+                result.success ? topics.ORDER_INVENTORY_RESERVE : topics.INVENTORY_FAILED,
                 {
                     orderId,
                     items,

@@ -1,24 +1,12 @@
-const checkoutOrchestrator = require("../orchestrators/checkoutOrchestrator");
 
 class OrderController {
-  async checkout(req, res) {
+  async createOrder(req, res) {
     const token = req.token;
     const userId = req.userId;
-
-    const { appliedVouchers = [] } = req.body;
+//     data: { totalDiscount, finalTotal, appliedVoucher, correlationId, cartItems: cart.items },
 
     try {
-      const result = await checkoutOrchestrator({
-        token,
-        userId,
-        appliedVouchers,
-      });
 
-      return res.status(200).json({
-        success: true,
-        message: "Checkout initiated successfully",
-        correlationId: result.correlationId,
-      });
     } catch (error) {
       return res.status(500).json({
         success: false,

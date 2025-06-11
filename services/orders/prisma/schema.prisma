@@ -16,15 +16,24 @@ datasource db {
 
 
 model Order {
-  id            String          @id @default(uuid())
-  userId        String
-  status        OrderStatus     @default(CREATED)
-  totalAmount   Decimal        
-  discountCode  String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id                String          @id @default(uuid())
+  userId            String
+  status            OrderStatus     @default(CREATED)
+  totalAmount       Decimal        
+  discountCode      String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 
-  items         OrderItem[]
+  items             OrderItem[]
+  appliedDiscounts  AppliedDiscounts[]
+}
+
+model AppliedDiscounts {
+  id           String           @id @default(uuid())
+  discountCode String
+  orderId      String
+
+  Order        Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model OrderItem {
@@ -34,7 +43,6 @@ model OrderItem {
   sku           String
   quantity      Int
   priceAtAdd    Decimal        
-
 
   order         Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

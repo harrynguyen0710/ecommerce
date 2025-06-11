@@ -3,7 +3,7 @@ const topics = require("../topic");
 const { getProducer } = require("./producer");
 
 
-async function publishInventoryReservation({ correlationId, userId, items, meta }) {
+async function publishInventoryReservation({ correlationId, userId, items }) {
     const producer = await getProducer();
 
     const message = {
@@ -21,9 +21,6 @@ async function publishInventoryReservation({ correlationId, userId, items, meta 
         messages: [
             {
                 value: JSON.stringify(message),
-                headers: {
-                    "correlation-id": correlationId,
-                }
             }
         ]
     });

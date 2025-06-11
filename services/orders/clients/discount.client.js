@@ -32,7 +32,7 @@ async function previewDiscount(token, payload) {
     }
   );
 
-  return res.result;
+  return res.data;
 }
 
 module.exports = {
