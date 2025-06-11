@@ -22,7 +22,15 @@ async function reserveInventoryConsumer() {
       const payload = JSON.parse(message.value.toString());
       console.log("payload::", payload);
       try {
-        const { orderId, items, correlationId, userId } = payload;
+        const {
+          userId,
+          items,
+          discountAmount,
+          finalAmount,
+          originalTotal,
+          validVouchers,
+          appliedVouchers,
+        } = payload;
 
         const result = await inventoryService.reserveItems(items);
 
@@ -31,10 +39,13 @@ async function reserveInventoryConsumer() {
             ? topics.ORDER_INVENTORY_RESERVE
             : topics.INVENTORY_FAILED,
           {
-            orderId,
             items,
-            correlationId,
             userId,
+            discountAmount,
+            finalAmount,
+            originalTotal,
+            validVouchers,
+            appliedVouchers,
             ...(result.success ? {} : { reason: result.reason }),
           }
         );
