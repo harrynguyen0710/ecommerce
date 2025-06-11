@@ -10,12 +10,12 @@ async function orderCreateConsumer() {
     const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.CART });
 
     await consumer.connect();
-    await consumer.subscribe({ topic: topics.CART_CREATED, fromBeginning: false });
+    await consumer.subscribe({ topic: topics.ORDER_CREATED, fromBeginning: false });
 
     await consumer.run({
         eachMessage: async ({ message }) => {
             const { userId, orderId } = JSON.parse(message.value.toString());
-
+            console.log("userId::", userId);
             try {
                 await cartService.cleanCart(userId);
                 console.log("Cleared cart successfully");
