@@ -4,6 +4,8 @@ const {
   createCart,
 } = require("../data/cartDataAccess");
 
+const { setCartInRedis } = require("../utils/redisCart");
+
 const { getCartByUserId, lockCart, unlockCart, } = require("../repositories/cart.repository");
 
 const { acquireLock, releaseLock, } = require("../utils/redisLock");
@@ -172,10 +174,12 @@ class CartService {
 
   async unlockCart(userId) {
     const redisKey = `cart:lock:${userId}`;
-
+    
     await unlockCart(userId);
-
     await releaseLock(redisKey);
+    
+    const cart = await getCartByUserId(userId);
+    await setCartInRedis(userId, cart);
   }
 
 }
