@@ -12,8 +12,8 @@ app.use(helmet());
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("v1/api/", orderRoutes);
-app.use("v1/api/", checkoutRoutes);
+app.use("/v1/api", orderRoutes);
+app.use("/v1/api", checkoutRoutes);
 
 // error catching handler
 app.use((req, res, next) => {

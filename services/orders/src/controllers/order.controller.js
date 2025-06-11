@@ -1,17 +1,15 @@
+const orderService = require("../services/order.service");
 
 class OrderController {
-  async createOrder(req, res) {
-    const token = req.token;
-    const userId = req.userId;
-//     data: { totalDiscount, finalTotal, appliedVoucher, correlationId, cartItems: cart.items },
-
+  async getOrders(req, res) {
     try {
+      const orders = await orderService.getAllOrders();
+
+      return res.status(200).json(orders);
 
     } catch (error) {
-      return res.status(500).json({
-        success: false,
-        message: "Checkout failed: " + error.message,
-      });
+      console.error("Error during fetching orders::", error.message);
+      return res.status(500).json(error);
     }
   }
 }

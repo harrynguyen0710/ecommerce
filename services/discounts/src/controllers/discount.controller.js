@@ -82,7 +82,7 @@ class DiscountController {
   async previewDiscount(req, res) {
     try {
       const userId = req.userId;
-
+    
       const result = await discountService.validateAndApplyDiscount({
         userId,
         ...req.body,

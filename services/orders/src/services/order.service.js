@@ -1,13 +1,10 @@
-const calculateTotal = require("../utils/calculateTotal");
+const { createOrder, getOrders, } = require("../repositories/order.repository");
 
-const { createOrder } = require("../repositories/order.repository");
-const {applyDiscountCode} = require("../../clients/discount.client");
 
 class OrderService {
     async createNewOrder(totalDiscount, finalTotal, appliedVoucher, cartItems, userId) {
-
         if (!cartItems || cartItems.length === 0) {
-            throw new Error("Cart is empty.");
+            return null;
         }
 
         const order = await createOrder({
@@ -19,6 +16,10 @@ class OrderService {
         });
 
         return order;
+    }
+
+    async getAllOrders() {
+        return await getOrders();
     }
 
 }

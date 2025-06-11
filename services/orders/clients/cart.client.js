@@ -15,13 +15,17 @@ async function fetchUserCart(token) {
 
 async function validateAndLock(token) {
     const url = `${CART_BASE_URL}/cart/validate-and-lock`;
-    const res = await axios.post(url, {
-        headers: {
-            Authorization: `Bearer ${token}`,
+    const res = await axios.post(
+        url,
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         }
-    });
+    );
 
-    return res;
+    return res.data;
 }
 
 module.exports = {

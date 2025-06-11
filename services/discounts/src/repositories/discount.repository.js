@@ -170,6 +170,7 @@ const getDiscountWithUsage = async (code, userId) => {
       
     },
   });
+
   return discount;
 }
 

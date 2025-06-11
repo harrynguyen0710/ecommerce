@@ -22,6 +22,17 @@ async function createOrder({ userId, totalAmount, discountCode, items }) {
     return order;
 }
 
+async function getOrders() {
+    const orders = await prisma.order.findMany({
+        include: {
+            items: true,
+            appliedDiscounts: true,
+        }
+    });
+    return orders;
+}
+
 module.exports = {
     createOrder,
+    getOrders,
 }
