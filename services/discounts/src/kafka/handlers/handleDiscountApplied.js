@@ -14,21 +14,20 @@ const emitDiscountRejected = require("../producers/emitDiscountReject");
 
 async function handleDiscountApplied(message) {
   const {
-    orderId,
-    userId,
-    applied = [],
+    order
   } = JSON.parse(message.value.toString());
-
+  console.log("payload:: ", JSON.parse(message.value.toString()));
+  const applied = order.appliedDiscounts;
   try {
     await prisma.$transaction(async (tx) => {
       for (const voucher of applied) {
         const { code } = voucher;
 
-        const alreadyLogged = await findUsageLog(tx, orderId, code, status.APPLIED);
+        const alreadyLogged = await findUsageLog(tx, order.orderId, code, status.APPLIED);
 
         if (alreadyLogged) {
           console.log(
-            `🔁 Skipping duplicate application for order ${orderId}, code ${code}`
+            `🔁 Skipping duplicate application for order ${order.orderId}, code ${code}`
           );
           continue;
         }
@@ -42,18 +41,18 @@ async function handleDiscountApplied(message) {
         await incrementByUsage(tx, discount.id);
         await upsertIncrement(tx, discount.id, userId);
 
-        await createUsageLog(tx, { orderId, code, userId, type: status.APPLIED });
+        await createUsageLog(tx, { orderId: order.orderId, code, userId, type: status.APPLIED });
       }
     });
-    console.log(`✅ Committed usage for order ${orderId}`);
+    console.log(`✅ Committed usage for order ${order.orderId}`);
   } catch (error) {
     console.error(
-      `❌ Failed to apply discount for order ${orderId}:`,
+      `❌ Failed to apply discount for order ${order.orderId}:`,
       err.message
     );
 
     await emitDiscountRejected({
-      orderId,
+      orderId: order.orderId,
       userId,
       applied,
       reason: error.message,
