@@ -13,15 +13,15 @@ const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.DISCOUNT });
 async function startDiscountConsumer() {
     await consumer.connect();
 
-    await consumer.subscribe({ topic: topics.DISCOUNT_APPLIED, fromBeginning: false });
-    await consumer.subscribe({ topic: topics.DISCOUNT_ROLLBACK, fromBeginning: false });
+    await consumer.subscribe({ topic: topics.ORDER_CREATED, fromBeginning: false });
+    // await consumer.subscribe({ topic: topics.ORDER_FAILED, fromBeginning: false });
 
     await consumer.run({
         eachMessage: async ({ topic, message }) => {
             try {
-                if (topic === topics.DISCOUNT_APPLIED) {
+                if (topic === topics.ORDER_CREATED) {
                     await handleDiscountApplied(message);
-                } else if (topic === topics.DISCOUNT_ROLLBACK) {
+                } else if (topic === topics.ORDER_FAILED) {
                     await handleDiscountRollback(message);
                 }
             } catch (error) {
