@@ -7,6 +7,6 @@ module.exports = {
     INVENTORY_RESERVE_REQUEST: "inventory.reserve.request",
     INVENTORY_FAILED: "inventory.failed",
     ORDER_CREATED: "order.created",
-    ORDER_CANCELLED: "order.cancelled",
+    ORDER_FAILED: "order.failed",
 };
 
