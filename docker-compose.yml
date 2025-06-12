@@ -231,9 +231,11 @@ services:
   inventory-order-created-consumer:
     build: ./services/inventories
     container_name: inventory-order-created-consumer
-    command: node src/server/startOrderCreatedConsumer.js
+    command: node src/servers/startOrderCreatedConsumer.js
     depends_on:
       kafka:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     env_file:
       - ./services/inventories/.env
@@ -275,19 +277,20 @@ services:
       - /app/node_modules
     networks:
       - ecommerce
-
-  discount_consumer:
+  
+  discount_apply_consumer:
     build:
       context: ./services/discounts
-    container_name: discount_consumer
-    command: node startConsumer.js
+    container_name: discount_apply_consumer
+    command: node src/servers/startOrderCreatedConsumer.js
     depends_on:
       kafka:
         condition: service_healthy
       postgres:
         condition: service_healthy
-    env_file:
-      - ./services/discounts/.env
+    volumes:
+      - ./services/discounts:/app
+      - /app/node_modules
     networks:
       - ecommerce
 
@@ -360,38 +363,38 @@ services:
       - ecommerce
 
   cart-cleanup-consumer:
-    build: ./services/carts
+    build: ./services/cart
     container_name: cart-cleanup-consumer
-    command: node src/server/consumerCleanup.js
+    command: node src/servers/consumerCleanup.js
     depends_on:
       kafka:
         condition: service_healthy
-    env_file:
-      - ./services/cart/.env
-    networks:
-      - ecommerce
-
-  cart-checkout-consumer:
-    build: ./services/carts
-    container_name: cart-checkout-consumer
-    command: node src/server/checkoutConsumer.js
-    depends_on:
-      kafka:
+      mongo:
         condition: service_healthy
+    volumes:
+      - ./services/cart:/app
+      - /app/node_modules
     env_file:
       - ./services/cart/.env
     networks:
       - ecommerce
 
   cart-unlock-consumer:
-    build: ./services/carts
+    build: ./services/cart
     container_name: cart-unlock-consumer
-    command: node src/server/orderCancelledConsumer.js
+    command: node src/servers/orderCancelledConsumer.js
     depends_on:
       kafka:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
     env_file:
       - ./services/cart/.env
+    volumes:
+      - ./services/cart:/app
+      - /app/node_modules
     networks:
       - ecommerce
 
@@ -415,6 +418,38 @@ services:
     networks:
       - ecommerce
   
+  order-inventory-successful-consumer:
+    build:
+      context: ./services/orders
+    container_name: order-inventory-successful-consumer
+    command: node src/servers/startReserveSuccessfulConsumer.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/orders/.env
+    volumes:
+      - ./services/orders:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+  
+  order-inventory-failed-consumer:
+    build:
+      context: ./services/orders
+    container_name: order-inventory-failed-consumer
+    command: node src/servers/startSendingOrderFailed.js
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./services/orders/.env
+    volumes:
+      - ./services/orders:/app
+      - /app/node_modules
+    networks:
+      - ecommerce
+
 
 
 volumes:

@@ -25,7 +25,7 @@ async function startDiscountConsumer() {
                     await handleDiscountRollback(message);
                 }
             } catch (error) {
-                console.error(`❌ Error handling message from topic ${topic}:`, err);
+                console.error(`❌ Error handling message from topic ${topic}:`, error);
             }
         },
     });

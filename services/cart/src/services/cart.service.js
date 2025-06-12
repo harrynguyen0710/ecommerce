@@ -44,7 +44,7 @@ class CartService {
         throw new Error(`SKU ${newItem.sku} not found in inventory`);
       }
 
-      const availableQty = inventory.quantity - inventory.reserved;
+      const availableQty = inventory.quantity;
       if (totalRequestedQty > availableQty) {
         throw new Error(
           `Only ${availableQty} units available for SKU ${newItem.sku}`
@@ -139,7 +139,7 @@ class CartService {
   }
 
   async cleanCart(userId) {
-    const cart = await getCart(userId);
+    const cart = await getCartByUserId(userId);
 
     if (!cart) throw new Error("Cart not found");
     

@@ -6,7 +6,7 @@ const { GROUP_CONSUMERS } = require("../../constants/index");
 
 const topics = require("../topics");
 
-const consumer = kafka.consumer({ groupId: GROUP_CONSUMERS.INVENTORY_GROUP });
+const consumer = kafka.consumer({ groupId: GROUP_CONSUMERS.INVENTORY_UPDATE_ORDER_CREATED });
 
 async function orderCreatedConsumer() {
   await consumer.connect();
@@ -17,10 +17,10 @@ async function orderCreatedConsumer() {
 
   await consumer.run({
     eachMessage: async ({ message }) => {
-      const { orders } = JSON.parse(message.value.toString());
-      console.log("orders::", orders);
+      const payload = JSON.parse(message.value.toString());
+
       try {
-        await inventoryService.confirmOrder(orders.items);
+        await inventoryService.confirmOrder(payload.items);
       } catch (error) {
         console.error(
           "Something went wrong during confirming order::",

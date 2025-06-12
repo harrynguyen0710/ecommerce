@@ -1,8 +1,15 @@
 const orderCreatedConsumer = require("../kafka/consumers/orderCreatedConsumer");
+const { connectPrisma } = require("../config/prisma");
 
-orderCreatedConsumer().then(() => {
-  console.log("✅ orderCreatedConsumer started");
-}).catch((err) => {
-  console.error("❌ Failed to start orderCreatedConsumer:", err.message);
-  process.exit(1);
-});
+(async () => {
+  try {
+    await connectPrisma();
+
+    await orderCreatedConsumer(); 
+
+    console.log("✅ Inventory update order created consumer started");
+  } catch (err) {
+    console.error("❌ Failed to start Inventory update order created consumer:", err);
+    process.exit(1);
+  }
+})();
