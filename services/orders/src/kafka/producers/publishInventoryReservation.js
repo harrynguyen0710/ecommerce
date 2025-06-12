@@ -3,7 +3,7 @@ const topics = require("../topic");
 const { getProducer } = require("./producer");
 
 
-async function publishInventoryReservation({ correlationId, userId, items }) {
+async function publishInventoryReservation({ correlationId, userId, items, meta }) {
     const producer = await getProducer();
 
     const message = {

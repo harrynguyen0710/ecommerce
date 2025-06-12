@@ -21,6 +21,9 @@ async function applyDiscountCode({ token, code, totalAmount }) {
 
 async function previewDiscount(token, payload) {
   const url = `${DISCOUNT_BASE_URL}/discounts/preview`;
+  console.log("url::",  url);
+  console.log("payload::", payload);
+
   const res = await axios.post(url,
      payload,
     {
@@ -29,6 +32,7 @@ async function previewDiscount(token, payload) {
       }
     }
   );
+
   return res.data;
 }
 

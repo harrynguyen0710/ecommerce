@@ -25,7 +25,11 @@ async function inventoryReseveSuccessflConsumser() {
             
             const { totalDiscount, finalTotal, appliedVoucher, cartItems, userId } = payload
             
+            console.log("payload::", payload);
+
             const order = await orderService.createNewOrder(totalDiscount, finalTotal, appliedVoucher, cartItems, userId);
+            
+            console.log("order::", order);
 
             if (order) {
                 await sendOrderCreatedEvent(order);
