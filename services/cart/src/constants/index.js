@@ -4,6 +4,7 @@ const REDIS = {
 
 const CONSUMER_GROUP = {
     CART: "cart-consumer-group",
+    CLEAN_CART: "cart-clean-group",
 }
 
 module.exports = {

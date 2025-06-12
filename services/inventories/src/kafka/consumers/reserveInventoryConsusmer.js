@@ -33,7 +33,9 @@ async function reserveInventoryConsumer() {
         } = payload;
 
         const result = await inventoryService.reserveItems(items);
-
+        
+        console.log("result::", result);
+        
         await emitInventoryStatus(
           result.success
             ? topics.ORDER_INVENTORY_RESERVE

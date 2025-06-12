@@ -20,7 +20,6 @@ model Order {
   userId            String
   status            OrderStatus     @default(CREATED)
   totalAmount       Decimal        
-  discountCode      String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 

@@ -19,7 +19,6 @@ async function getCartFromRedis(userId) {
 }
 
 async function setCartInRedis(userId, cartData, ttl = CART_TTL_SECONDS) {
-  console.log("cart Data::", cartData);
   const redis = await getRedisClient();
   const key = getCartKey(userId);
 

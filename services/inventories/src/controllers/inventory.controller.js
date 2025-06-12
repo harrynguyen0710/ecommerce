@@ -31,12 +31,6 @@ class InventoryController {
       const updates = req.body;
       const sku = req.params.sku;
 
-      if (!Array.isArray(updates) || updates.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "Request body must be a non-empty array of updates" });
-      }
-
       const result = await inventoryService.updateInventoryBySku(sku, updates);
       res.status(200).json(result);
     } catch (error) {

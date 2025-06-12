@@ -12,35 +12,47 @@ const emitUnlockCartEvent = require("../producers/emitUnlockCartEvent");
 
 const { CONSUMER_GROUP } = require("../../constants/index");
 
-
 const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.ORDER });
 
-async function inventoryReseveSuccessflConsumser() {
-    await consumer.connect();
-    await consumer.subscribe({ topic: topics.ORDER_INVENTORY_RESERVE, fromBeginning: false });
+async function inventoryReseveSuccessfulConsumser() {
+  await consumer.connect();
+  await consumer.subscribe({
+    topic: topics.ORDER_INVENTORY_RESERVE,
+    fromBeginning: false,
+  });
 
-    await consumer.run({
-        eachMessage: async ({ message }) => {
-            const payload = JSON.parse(message.value.toString());
-            
-            const { totalDiscount, finalTotal, appliedVoucher, cartItems, userId } = payload
-            
-            console.log("payload::", payload);
+  await consumer.run({
+    eachMessage: async ({ message }) => {
+      const payload = JSON.parse(message.value.toString());
+      console.log("payload::", payload);
 
-            const order = await orderService.createNewOrder(totalDiscount, finalTotal, appliedVoucher, cartItems, userId);
-            
-            console.log("order::", order);
+      try {
+        const { discountAmount, finalAmount, appliedVouchers, items, userId } =  payload;
 
-            if (order) {
-                await sendOrderCreatedEvent(order);
-            } else {
-                await sendOrderCreatedFailEvent(cartItems);
-            }
+        const order = await orderService.createNewOrder(
+          discountAmount,
+          finalAmount,
+          appliedVouchers,
+          items,
+          userId
+        );
 
-            await emitUnlockCartEvent(userId);
+        console.log("order::", order);
 
+        if (order) {
+          console.log("sent1");
+          await sendOrderCreatedEvent(order);
+        } else {
+          console.log("sent2");
+          await sendOrderCreatedFailEvent(cartItems);
         }
-    });
+
+        await emitUnlockCartEvent(userId);
+      } catch (error) {
+        console.error("Error happened when creating an order");
+      }
+    },
+  });
 }
 
-module.exports = inventoryReseveSuccessflConsumser;
+module.exports = inventoryReseveSuccessfulConsumser;

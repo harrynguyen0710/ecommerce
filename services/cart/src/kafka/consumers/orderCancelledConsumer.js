@@ -1,4 +1,4 @@
-const kafka = require("../../configs/cartRedis");
+const kafka = require("../../configs/kafka");
 
 const cartSerive = require("../../services/cart.service");
 
@@ -15,7 +15,7 @@ async function orderCancelledConsumer () {
     await consumer.run({
         eachMessage: async ({ message }) => {
             const { userId } = JSON.parse(message.value.toString());
-            console.log("userId::", userId)
+
             try {
                 await cartSerive.unlockCart(userId);
                 console.log("Unlocked cart successfully");

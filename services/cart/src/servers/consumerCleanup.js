@@ -1,8 +1,17 @@
 const orderCreateConsumer = require("../kafka/consumers/orderCreatedConsumer");
 
-orderCreateConsumer()
-  .then(() => console.log("Cart cleanup consumer started (order.created)"))
-  .catch((err) => {
-    console.error("Failed to start cart cleanup consumer:", err);
+const connectMongo = require("../configs/mongo");
+
+
+(async () => {
+  try {
+    await connectMongo();
+
+    await orderCreateConsumer();
+
+    console.log("✅ Order created consumer started");
+  } catch (error) {
+    console.error("❌ Failed to start order created consumer:", error);
     process.exit(1);
-  });    
+  }
+})();
