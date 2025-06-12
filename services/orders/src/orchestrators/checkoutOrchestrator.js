@@ -27,7 +27,8 @@ async function checkoutOrchestrator({ token, userId, appliedVouchers = [] }) {
   const totalAmount  = calculateTotal(cart.items)
   
   const cleanedCart = cleanCart(cart.items, ["sku", "quantity", "priceAtAdd"]);
-
+  console.log("cleanedCart::", cleanedCart);
+  
   const discounts = await previewDiscount(token, {
     appliedVouchers,
     cartItems: cleanedCart,

@@ -216,7 +216,7 @@ services:
   inventory-reserve-consumer:
     build: ./services/inventories
     container_name: inventory-reserve-consumer
-    command: node src/server/startReserveInventoryConsumer.js
+    command: node /app/src/servers/startReserveInventoryConsumer.js
     depends_on:
       kafka:
         condition: service_healthy

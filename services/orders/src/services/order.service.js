@@ -7,6 +7,8 @@ class OrderService {
             return null;
         }
 
+        console.log("order::", totalDiscount, finalTotal, appliedVoucher, cartItems, userId);
+
         const order = await createOrder({
             userId,
             totalAmount: finalTotal,

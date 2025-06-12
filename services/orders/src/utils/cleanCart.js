@@ -3,7 +3,7 @@ function cleanCart (items, fields) {
         const cleanedCart = {};
         fields.forEach(field => {
             if (field in item) {
-                cleanedCart[field] = field;
+                cleanedCart[field] = item[field];
             }
         });
 
