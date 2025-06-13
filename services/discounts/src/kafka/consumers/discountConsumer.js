@@ -4,8 +4,8 @@ const topics = require("../topics");
 
 const { CONSUMER_GROUP } = require("../../constants/index");
 
-const handleDiscountApplied = require("../handlers/handleDiscountApplied");
-const handleDiscountRollback = require("../handlers/handleDiscountRollback");
+const handleDiscountApplied = require("../events/handleDiscountApplied");
+const handleDiscountRollback = require("../events/handleDiscountRollback");
 
 
 const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.DISCOUNT });
