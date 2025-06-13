@@ -23,7 +23,9 @@ class CartController {
       const newItem = req.body;
 
       const result = await CartService.addToCart(userId, newItem);
+
       return res.status(200).json(result);
+
     } catch (error) {
       console.error("❌ addToCart:", error.message);
       return res.status(400).json({ message: error.message });
@@ -37,7 +39,9 @@ class CartController {
       const { quantity } = req.body;
 
       const result = await CartService.updateItemQuantity(userId, sku, quantity);
+
       return res.status(200).json(result);
+
     } catch (error) {
       console.error("❌ updateItemQuantity:", error.message);
       return res.status(400).json({ message: error.message });
@@ -50,7 +54,9 @@ class CartController {
       const { sku } = req.params;
 
       const result = await CartService.removeItemFromCart(userId, sku);
+
       return res.status(200).json(result);
+    
     } catch (error) {
       console.error("❌ removeItemFromCart:", error.message);
       return res.status(400).json({ message: error.message });
@@ -62,7 +68,9 @@ class CartController {
       const userId = req.userId;
 
       const result = await CartService.cleanCart(userId);
+
       return res.status(200).json(result);
+      
     } catch (error) {
       console.error("❌ cleanCart:", error.message);
       return res.status(400).json({ message: error.message });
