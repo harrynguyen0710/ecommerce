@@ -1,4 +1,4 @@
-const { getProducer } = require("./producer");
+const { getProducer } = require("../configs/producer");
 
 const topics = require("../topic");
 

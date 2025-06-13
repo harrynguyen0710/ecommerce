@@ -5,7 +5,7 @@ const topics = require("../topic");
 const { CONSUMER_GROUP } = require("../../constants/index");
 
 
-const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.ORDER });
+const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.ORDER_REVERTED });
 
 async function inventoryFailedConsumser() {
     await consumer.connect();
