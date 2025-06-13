@@ -1,5 +1,6 @@
 const CONSUMER_GROUP = {
-  ORDER: "order-consumer-group",
+  ORDER_CREATED: "order-created-group",
+  ORDER_REVERTED: "order-reverted-group",
 };
 
 module.exports = {

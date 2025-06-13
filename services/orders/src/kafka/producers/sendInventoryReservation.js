@@ -1,6 +1,6 @@
 const topics = require("../topic");
 
-const { getProducer } = require("./producer");
+const { getProducer } = require("../configs/producer");
 
 
 async function publishInventoryReservation({ correlationId, userId, items, meta }) {
