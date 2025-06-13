@@ -12,7 +12,6 @@ async function connectMongo(retries = 5, delay = 5000) {
       });
 
       console.log("📦 Connected to DB:", mongoose.connection.name);
-      console.log("✅ In Cart Service, MongoDB connected");
       return;
     } catch (error) {
       console.error("❌ MongoDB connection error:", error.message);

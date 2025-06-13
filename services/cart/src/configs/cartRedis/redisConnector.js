@@ -5,8 +5,8 @@ async function connectRedis(retries = 5, delay = 5000) {
 
   const client = createClient({ url: REDIS_URL });
 
-  client.on("error", (err) => {
-    console.error("❌ Redis client error:", err.message);
+  client.on("error", (error) => {
+    console.error("❌ Redis client error:", error.message);
   });
 
   while (retries) {

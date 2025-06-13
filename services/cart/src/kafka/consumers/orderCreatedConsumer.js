@@ -4,7 +4,7 @@ const { CONSUMER_GROUP } = require("../../constants/index");
 
 const topics = require("../topics");
 
-const cartService = require("../../services/cart.service");
+const orderCreatedEvent = require("../events/orderCreatedEvent");
 
 async function orderCreateConsumer() {
     const consumer = kafka.consumer({ groupId: CONSUMER_GROUP.CLEAN_CART });
@@ -15,13 +15,9 @@ async function orderCreateConsumer() {
     await consumer.run({
         eachMessage: async ({ message }) => {
             const { userId } = JSON.parse(message.value.toString());
-            console.log("userId::", userId);
-            try {
-                await cartService.cleanCart(userId);
-                console.log("Cleared cart successfully");
-            } catch (error) {
-                console.error(`Failed to clear cart for ${userId}:`, error.message);
-            }
+            
+            await orderCreatedEvent(userId);
+
         }
     });
 

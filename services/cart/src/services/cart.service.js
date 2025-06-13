@@ -110,7 +110,9 @@ class CartService {
       items[index].quantity = desiredQty;
 
       const updatedCart = { userId, items };
+
       return await saveAndCacheCart(userId, updatedCart, cart.updatedAt);
+      
     } catch (error) {
       console.error("Something went wrong during updating cart", error);
       throw new Error(error);

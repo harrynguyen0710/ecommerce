@@ -1,4 +1,4 @@
-const { getProducer } = require("./producer");
+const { getProducer } = require("../configs/producer");
 
 async function emitMessage(topic, payload) {
     const producer = await getProducer();
