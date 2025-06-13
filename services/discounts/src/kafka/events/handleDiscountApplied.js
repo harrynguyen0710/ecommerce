@@ -10,7 +10,7 @@ const {prisma} = require("../../configs/prisma");
 
 const status = require("../../enum/status");
 
-const emitDiscountRejected = require("../producers/emitDiscountReject");
+const emitDiscountRejected = require("../producers/sendDiscountReject");
 
 async function handleDiscountApplied(message) {
   console.log("payload:: ", JSON.parse(message.value.toString()));
